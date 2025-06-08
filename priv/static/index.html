@@ -18,40 +18,40 @@
       color: #23272f;
       background: #f4f8fb;
       min-height: 100vh;
-      padding: 20px;
+      padding: clamp(12px, 3vw, 24px);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .container {
-      max-width: 420px;
+      max-width: min(95vw, 800px);
       width: 100%;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(10px) saturate(110%);
       -webkit-backdrop-filter: blur(10px) saturate(110%);
-      padding: 36px 28px 28px 28px;
-      border-radius: 16px;
+      padding: clamp(20px, 4vw, 36px);
+      border-radius: clamp(12px, 2vw, 16px);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
       border: 1.5px solid #e3e8ee;
     }
 
     h1 {
       color: #2563eb;
-      font-size: 2.1rem;
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
       font-weight: 600;
-      margin-bottom: 24px;
+      margin-bottom: clamp(16px, 3vw, 24px);
       text-align: center;
       letter-spacing: -1px;
     }
 
     h2 {
       color: #2563eb;
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
       font-weight: 600;
-      margin: 32px 0 14px 0;
-      padding-top: 12px;
+      margin: clamp(24px, 4vw, 32px) 0 clamp(10px, 2vw, 14px) 0;
+      padding-top: clamp(8px, 2vw, 12px);
       border-top: 1px solid #e3e8ee;
       letter-spacing: 0.5px;
     }
@@ -60,8 +60,8 @@
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 11px 22px;
-      font-size: 15px;
+      padding: clamp(8px, 2vw, 11px) clamp(16px, 3vw, 22px);
+      font-size: clamp(14px, 2vw, 15px);
       font-weight: 600;
       border-radius: 8px;
       cursor: pointer;
@@ -69,6 +69,10 @@
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
       outline: none;
       letter-spacing: 0.5px;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      display: block;
     }
 
     button:hover, button:focus {
@@ -78,8 +82,8 @@
     }
 
     input, textarea {
-      padding: 11px 14px;
-      font-size: 15px;
+      padding: clamp(8px, 2vw, 11px) clamp(10px, 2vw, 14px);
+      font-size: clamp(14px, 2vw, 15px);
       border: 1.5px solid #e3e8ee;
       border-radius: 8px;
       transition: border-color 0.2s;
@@ -93,6 +97,9 @@
       resize: vertical;
       box-sizing: border-box;
       word-break: break-all;
+      max-width: 600px;
+      margin: 0 auto;
+      display: block;
     }
 
     input:focus {
@@ -102,16 +109,18 @@
     }
 
     p {
-      margin: 15px 0;
-      padding: 12px;
+      margin: clamp(10px, 2vw, 15px) 0;
+      padding: clamp(8px, 2vw, 12px);
       background: #f1f5f9;
       border-radius: 7px;
       border-left: 3px solid #3b82f6;
       font-family: 'Monaco', 'Consolas', monospace;
       word-break: break-all;
-      font-size: 14px;
+      font-size: clamp(13px, 1.8vw, 14px);
       color: #2563eb;
       min-height: 18px;
+      max-width: 100%;
+      overflow-x: auto;
     }
 
     pre {
@@ -119,39 +128,80 @@
       padding: 0;
       background: transparent;
       font-family: 'Monaco', 'Consolas', monospace;
-      font-size: 14px;
+      font-size: clamp(13px, 1.8vw, 14px);
       color: #2563eb;
       white-space: pre-wrap;
       word-wrap: break-word;
+      max-width: 100%;
+      overflow-x: auto;
     }
 
     .section {
-      margin-bottom: 18px;
+      margin-bottom: clamp(14px, 3vw, 18px);
+      width: 100%;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      gap: 10px;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: clamp(8px, 2vw, 10px);
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    @media (max-width: 600px) {
+    @media (min-width: 768px) {
       .container {
-        padding: 16px 6px;
-        margin: 10px;
+        padding: clamp(24px, 5vw, 36px);
       }
-      h1 {
-        font-size: 1.3rem;
-      }
+
       .input-group {
-        flex-direction: column;
-        align-items: stretch;
+        gap: 12px;
       }
-      input {
-        margin-right: 0;
-        margin-bottom: 10px;
+
+      button {
+        width: auto;
+        min-width: 200px;
+      }
+
+      input, textarea {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .container {
+        padding: 16px;
+        margin: 8px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      input, textarea {
+        width: 100%;
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      pre {
+        font-size: 13px;
+      }
+    }
+
+    /* Add smooth scrolling for better mobile experience */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Improve touch targets on mobile */
+    @media (hover: none) and (pointer: coarse) {
+      button, input, textarea {
+        min-height: 44px;
       }
     }
   </style>
