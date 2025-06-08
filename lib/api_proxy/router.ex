@@ -23,6 +23,6 @@ defmodule ApiProxy.Router do
   end
 
   match _ do
-    send_resp(conn, 404, "Oops!")
+    send_resp(conn, 404, "Endpoint not found")
   end
 end

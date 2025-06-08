@@ -8,7 +8,7 @@ defmodule ApiProxy.Plugs.APIKeyAuth do
     if public_path?(conn.request_path) do
       conn
     else
-      case get_req_header(conn, "x-api-key") do
+      case get_req_header(conn, "X-API-Key") do
         [key] when is_binary(key) ->
           if ApiProxy.KeysManager.valid_key?(key) do
             conn
