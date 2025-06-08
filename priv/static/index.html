@@ -204,6 +204,32 @@
         min-height: 44px;
       }
     }
+
+    /* Loading spinner styles */
+    .loading-spinner {
+      display: none;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading .loading-spinner {
+      display: block;
+    }
+
+    .loading button {
+      opacity: 0.7;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -226,6 +252,7 @@
     <div class="section">
       <div class="input-group">
         <button onclick="callProtected('/api/v1/joke')">Get Random Joke</button>
+        <div class="loading-spinner" id="randomJokeSpinner"></div>
       </div>
       <p id="randomJokeResponse"></p>
     </div>
@@ -234,6 +261,7 @@
     <div class="section">
       <div class="input-group">
         <button onclick="getCategories()">Get All Categories</button>
+        <div class="loading-spinner" id="categoriesSpinner"></div>
       </div>
       <p id="categoriesResponse"></p>
     </div>
@@ -243,6 +271,7 @@
       <div class="input-group">
         <input type="text" id="categoryInput" placeholder="Enter category (e.g. 'dev', 'science')" />
         <button onclick="getJokeByCategory()">Get Joke by Category</button>
+        <div class="loading-spinner" id="categoryJokeSpinner"></div>
       </div>
       <p id="categoryJokeResponse"></p>
     </div>
@@ -252,6 +281,7 @@
       <div class="input-group">
         <input type="text" id="searchInput" placeholder="Enter search query" />
         <button onclick="searchJokes()">Search Jokes</button>
+        <div class="loading-spinner" id="searchSpinner"></div>
       </div>
       <p id="searchResponse"></p>
     </div>
@@ -271,12 +301,30 @@
         });
     }
 
+    function setLoading(sectionId, isLoading) {
+      const section = document.querySelector(`#${sectionId}`).closest('.section');
+      const button = section.querySelector('button');
+      const spinner = section.querySelector('.loading-spinner');
+      
+      if (isLoading) {
+        section.classList.add('loading');
+        button.disabled = true;
+      } else {
+        section.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+
     function makeRequest(endpoint, responseId) {
       const key = getApiKey();
       if (!key) {
         document.getElementById(responseId).innerText = 'Error: Please generate and enter an API key first';
         return;
       }
+
+      const spinnerId = responseId.replace('Response', 'Spinner');
+      setLoading(spinnerId, true);
+      document.getElementById(responseId).innerText = '';
 
       fetch(endpoint, {
         headers: { 'X-API-Key': key }
@@ -287,6 +335,9 @@
         })
         .catch(err => {
           document.getElementById(responseId).innerText = 'Error: ' + err.message;
+        })
+        .finally(() => {
+          setLoading(spinnerId, false);
         });
     }
 
