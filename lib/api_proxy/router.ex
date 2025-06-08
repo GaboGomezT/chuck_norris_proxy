@@ -2,6 +2,7 @@ defmodule ApiProxy.Router do
   use Plug.Router
 
   plug(:match)
+  plug ApiProxy.Plugs.APIKeyAuth
   plug(:dispatch)
 
   get "/joke" do
