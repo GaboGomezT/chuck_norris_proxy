@@ -20,10 +20,20 @@ defmodule ApiProxy.Router do
   end
 
   get "/api/v1/joke" do
-    send_resp(conn, 200, "Here's a Chuck Norris joke.")
+    send_resp(
+      conn,
+      200,
+      Jason.encode!(%{
+        categories: [],
+        created_at: "2020-01-05 13:42:19.314155",
+        id: "P-vC4QGnRyGg0YvS_U-_Zw",
+        updated_at: "2020-01-05 13:42:19.314155",
+        value: "Chuck Norris can unscramble an egg."
+      })
+    )
   end
 
   match _ do
-    send_resp(conn, 404, "Endpoint not found")
+    send_resp(conn, 404, Jason.encode!(%{message: "Endpoint not found"}))
   end
 end

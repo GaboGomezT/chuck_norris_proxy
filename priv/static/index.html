@@ -114,6 +114,17 @@
       min-height: 18px;
     }
 
+    pre {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+      color: #2563eb;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
     .section {
       margin-bottom: 18px;
     }
@@ -179,9 +190,12 @@
       fetch('/api/v1/joke', {
         headers: { 'X-API-Key': key }
       })
-        .then(res => res.text())
-        .then(txt => {
-          document.getElementById('response').innerText = txt;
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('response').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        })
+        .catch(err => {
+          document.getElementById('response').innerText = 'Error: ' + err.message;
         });
     }
   </script>

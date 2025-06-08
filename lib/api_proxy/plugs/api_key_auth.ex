@@ -14,13 +14,13 @@ defmodule ApiProxy.Plugs.APIKeyAuth do
             conn
           else
             conn
-            |> send_resp(401, "Unauthorized")
+            |> send_resp(401, Jason.encode!(%{message: "Unauthorized"}))
             |> halt()
           end
 
         _ ->
           conn
-          |> send_resp(401, "Unauthorized")
+          |> send_resp(401, Jason.encode!(%{message: "Unauthorized"}))
           |> halt()
       end
     end

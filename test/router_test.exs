@@ -94,7 +94,7 @@ defmodule ApiProxy.RouterTest do
         |> Router.call(@opts)
 
       assert conn.status == 401
-      assert conn.resp_body == "Unauthorized"
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
 
     test "returns joke with valid API key" do
@@ -110,7 +110,15 @@ defmodule ApiProxy.RouterTest do
         |> Router.call(@opts)
 
       assert conn.status == 200
-      assert conn.resp_body == "Here's a Chuck Norris joke."
+
+      assert conn.resp_body ==
+               Jason.encode!(%{
+                 categories: [],
+                 created_at: "2020-01-05 13:42:19.314155",
+                 id: "P-vC4QGnRyGg0YvS_U-_Zw",
+                 updated_at: "2020-01-05 13:42:19.314155",
+                 value: "Chuck Norris can unscramble an egg."
+               })
     end
 
     test "includes rate limit headers" do
@@ -193,7 +201,15 @@ defmodule ApiProxy.RouterTest do
           |> Router.call(@opts)
 
         assert conn1.status == 200
-        assert conn1.resp_body == "Here's a Chuck Norris joke."
+
+        assert conn1.resp_body ==
+                 Jason.encode!(%{
+                   categories: [],
+                   created_at: "2020-01-05 13:42:19.314155",
+                   id: "P-vC4QGnRyGg0YvS_U-_Zw",
+                   updated_at: "2020-01-05 13:42:19.314155",
+                   value: "Chuck Norris can unscramble an egg."
+                 })
 
         # Step 3: Use key successfully (second request)
         conn2 =

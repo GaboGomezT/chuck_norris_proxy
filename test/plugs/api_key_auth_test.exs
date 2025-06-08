@@ -44,7 +44,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       assert conn.halted
       assert conn.status == 401
-      assert conn.resp_body == "Unauthorized"
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
 
     test "blocks access to unknown endpoints without API key" do
@@ -77,7 +77,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       assert conn.halted
       assert conn.status == 401
-      assert conn.resp_body == "Unauthorized"
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
   end
 
@@ -112,7 +112,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       assert conn.halted
       assert conn.status == 401
-      assert conn.resp_body == "Unauthorized"
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
 
     test "handles missing API key header" do
@@ -122,7 +122,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       assert conn.halted
       assert conn.status == 401
-      assert conn.resp_body == "Unauthorized"
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
 
     test "handles multiple API key headers (uses first one)" do
