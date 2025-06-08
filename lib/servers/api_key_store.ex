@@ -1,4 +1,4 @@
-defmodule ApiProxy.KeysManager do
+defmodule ApiProxy.Servers.ApiKeyStore do
   use GenServer
   @table_name :api_keys
 

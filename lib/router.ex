@@ -15,7 +15,7 @@ defmodule ApiProxy.Router do
 
   post "/api/v1/keys" do
     key = UUID.uuid4()
-    ApiProxy.KeysManager.add_key(key)
+    ApiProxy.Servers.ApiKeyStore.add_key(key)
     send_resp(conn, 200, Jason.encode!(%{key: key}))
   end
 

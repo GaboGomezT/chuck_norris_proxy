@@ -3,7 +3,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
   import Plug.Test
   import Plug.Conn
   alias ApiProxy.Plugs.APIKeyAuth
-  alias ApiProxy.KeysManager
+  alias ApiProxy.Servers.ApiKeyStore
 
   setup do
     # Clear the ETS table for each test (service already running)
@@ -59,7 +59,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
     test "allows access with valid API key" do
       # Create a valid API key
       api_key = "test-api-key-123"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       conn =
         conn(:get, "/api/v1/joke")
@@ -84,7 +84,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
   describe "API key validation" do
     test "validates API key case sensitivity" do
       api_key = "CaseSensitiveKey123"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       # Correct case should work
       conn1 =
@@ -127,7 +127,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
     test "handles multiple API key headers (uses first one)" do
       api_key = "valid-key-456"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       # Create a connection with multiple x-api-key headers manually
       # since put_req_header replaces rather than appends
@@ -156,7 +156,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
     test "allows POST requests with valid API key" do
       api_key = "test-post-key"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       conn =
         conn(:post, "/api/v1/joke")
@@ -178,7 +178,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
     test "allows PUT requests with valid API key" do
       api_key = "test-put-key"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       conn =
         conn(:put, "/api/v1/joke")
@@ -200,7 +200,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
     test "allows DELETE requests with valid API key" do
       api_key = "test-delete-key"
-      KeysManager.add_key(api_key)
+      ApiKeyStore.add_key(api_key)
 
       conn =
         conn(:delete, "/api/v1/joke")

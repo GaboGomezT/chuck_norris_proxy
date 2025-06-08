@@ -10,7 +10,7 @@ defmodule ApiProxy.Plugs.APIKeyAuth do
     else
       case get_req_header(conn, "x-api-key") do
         [key | _] when is_binary(key) and key != "" ->
-          if ApiProxy.KeysManager.valid_key?(key) do
+          if ApiProxy.Servers.ApiKeyStore.valid_key?(key) do
             conn
           else
             conn

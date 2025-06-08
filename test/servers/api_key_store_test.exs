@@ -1,6 +1,6 @@
-defmodule ApiProxy.KeysManagerTest do
+defmodule ApiProxy.Servers.ApiKeyStoreTest do
   use ExUnit.Case, async: false
-  alias ApiProxy.KeysManager
+  alias ApiProxy.Servers.ApiKeyStore
 
   setup do
     # Clear the ETS table for each test (service already running)
@@ -11,7 +11,7 @@ defmodule ApiProxy.KeysManagerTest do
   describe "add_key/1" do
     test "adds a key and returns it" do
       key = "test-key-123"
-      result = KeysManager.add_key(key)
+      result = ApiKeyStore.add_key(key)
       assert result == key
     end
 
@@ -19,46 +19,46 @@ defmodule ApiProxy.KeysManagerTest do
       key1 = "test-key-1"
       key2 = "test-key-2"
 
-      KeysManager.add_key(key1)
-      KeysManager.add_key(key2)
+      ApiKeyStore.add_key(key1)
+      ApiKeyStore.add_key(key2)
 
-      assert KeysManager.valid_key?(key1) == true
-      assert KeysManager.valid_key?(key2) == true
+      assert ApiKeyStore.valid_key?(key1) == true
+      assert ApiKeyStore.valid_key?(key2) == true
     end
   end
 
   describe "valid_key?/1" do
     test "returns true for valid keys" do
       key = "valid-key-789"
-      KeysManager.add_key(key)
-      assert KeysManager.valid_key?(key) == true
+      ApiKeyStore.add_key(key)
+      assert ApiKeyStore.valid_key?(key) == true
     end
 
     test "returns false for invalid keys" do
-      assert KeysManager.valid_key?("non-existent-key") == false
+      assert ApiKeyStore.valid_key?("non-existent-key") == false
     end
 
     test "returns false for empty string" do
-      assert KeysManager.valid_key?("") == false
+      assert ApiKeyStore.valid_key?("") == false
     end
 
     test "returns false for nil" do
-      assert KeysManager.valid_key?(nil) == false
+      assert ApiKeyStore.valid_key?(nil) == false
     end
 
     test "keys are case sensitive" do
       key = "CaseSensitiveKey"
-      KeysManager.add_key(key)
+      ApiKeyStore.add_key(key)
 
-      assert KeysManager.valid_key?(key) == true
-      assert KeysManager.valid_key?(String.downcase(key)) == false
+      assert ApiKeyStore.valid_key?(key) == true
+      assert ApiKeyStore.valid_key?(String.downcase(key)) == false
     end
   end
 
   describe "key hashing" do
     test "keys are stored securely (not in plain text)" do
       key = "secret-key-123"
-      KeysManager.add_key(key)
+      ApiKeyStore.add_key(key)
 
       # Check that the raw key is not directly stored in ETS
       table_contents = :ets.tab2list(:api_keys)
@@ -69,7 +69,7 @@ defmodule ApiProxy.KeysManagerTest do
              end)
 
       # But the key should still be valid
-      assert KeysManager.valid_key?(key) == true
+      assert ApiKeyStore.valid_key?(key) == true
     end
   end
 end

@@ -1,23 +1,12 @@
 defmodule ApiProxyTest do
   use ExUnit.Case
   import ApiProxy.Test.EnvHelper
-  doctest ApiProxy
-
-  describe "ApiProxy module" do
-    test "greets the world" do
-      assert ApiProxy.hello() == :world
-    end
-
-    test "module exists and is accessible" do
-      assert Code.ensure_loaded?(ApiProxy)
-    end
-  end
 
   describe "Application startup" do
     test "application starts successfully" do
       # The application should already be started by test_helper.exs
-      assert Process.whereis(ApiProxy.KeysManager) != nil
-      assert Process.whereis(ApiProxy.RateLimiterServer) != nil
+          assert Process.whereis(ApiProxy.Servers.ApiKeyStore) != nil
+    assert Process.whereis(ApiProxy.Servers.RateLimiter) != nil
     end
 
     test "ETS tables are created" do
