@@ -1,3 +1,7 @@
+# Silence all logging before application startup
+Logger.configure(level: :none)
+Logger.remove_backend(:console)
+
 ExUnit.start()
 
 # Load test support files
