@@ -4,17 +4,165 @@
 <head>
   <meta charset="UTF-8">
   <title>API Key Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #23272f;
+      background: #f4f8fb;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 420px;
+      width: 100%;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px) saturate(110%);
+      -webkit-backdrop-filter: blur(10px) saturate(110%);
+      padding: 36px 28px 28px 28px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+      border: 1.5px solid #e3e8ee;
+    }
+
+    h1 {
+      color: #2563eb;
+      font-size: 2.1rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+
+    h2 {
+      color: #2563eb;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 32px 0 14px 0;
+      padding-top: 12px;
+      border-top: 1px solid #e3e8ee;
+      letter-spacing: 0.5px;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s, background 0.18s;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+      outline: none;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover, button:focus {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.13);
+      background: #2563eb;
+    }
+
+    input, textarea {
+      padding: 11px 14px;
+      font-size: 15px;
+      border: 1.5px solid #e3e8ee;
+      border-radius: 8px;
+      transition: border-color 0.2s;
+      margin-right: 0;
+      font-family: 'Monaco', 'Consolas', monospace;
+      background: rgba(255,255,255,0.85);
+      color: #23272f;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      width: 100%;
+      min-width: 0;
+      resize: vertical;
+      box-sizing: border-box;
+      word-break: break-all;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+
+    p {
+      margin: 15px 0;
+      padding: 12px;
+      background: #f1f5f9;
+      border-radius: 7px;
+      border-left: 3px solid #3b82f6;
+      font-family: 'Monaco', 'Consolas', monospace;
+      word-break: break-all;
+      font-size: 14px;
+      color: #2563eb;
+      min-height: 18px;
+    }
+
+    .section {
+      margin-bottom: 18px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px 6px;
+        margin: 10px;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      .input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      input {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Generate API Key</h1>
-  <button onclick="generateKey()">Generate</button>
-  <p id="result"></p>
+  <div class="container">
+    <h1>Generate API Key</h1>
+    <div class="section">
+      <button onclick="generateKey()">Generate</button>
+      <p id="result"></p>
+    </div>
 
-  <h2>Test Protected API</h2>
-  <input id="apiKey" placeholder="Paste your key here" size="50" />
-  <button onclick="callProtected()">Call /api/v1/joke</button>
-  <p id="response"></p>
+    <h2>Test Protected API</h2>
+    <div class="section">
+      <div class="input-group">
+        <textarea id="apiKey" placeholder="Paste your key here" rows="2"></textarea>
+        <button onclick="callProtected()">Call /api/v1/joke</button>
+      </div>
+      <p id="response"></p>
+    </div>
+  </div>
 
   <script>
     function generateKey() {
