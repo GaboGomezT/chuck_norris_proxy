@@ -10,6 +10,7 @@ defmodule ApiProxy.Application do
     children = [
       # Starts a worker by calling: ApiProxy.Worker.start_link(arg)
       # {ApiProxy.Worker, arg}
+      {Plug.Cowboy, scheme: :http, plug: ApiProxy.Router, options: [port: 4000]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
