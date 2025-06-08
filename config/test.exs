@@ -12,3 +12,8 @@ config :logger,
   compile_time_purge_matching: [
     [level_lower_than: :error]
   ]
+
+# Silence all logger calls
+config :logger, :console,
+  level: :none,
+  format: ""

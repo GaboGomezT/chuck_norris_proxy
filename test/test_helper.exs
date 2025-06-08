@@ -1,6 +1,10 @@
-# Silence all logging before application startup
+# Silence all logging as early as possible
 Logger.configure(level: :none)
 Logger.remove_backend(:console)
+
+# Ensure applications started during tests also use silent logging
+Application.put_env(:logger, :level, :none)
+Application.put_env(:logger, :backends, [])
 
 ExUnit.start()
 
