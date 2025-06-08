@@ -2,6 +2,7 @@ defmodule ApiProxy.Router do
   use Plug.Router
 
   plug(:match)
+  plug(ApiProxy.Plugs.APIKeyAuth)
   plug(:dispatch)
 
   get "/api-keys-generator" do
@@ -15,8 +16,6 @@ defmodule ApiProxy.Router do
     ApiProxy.KeysManager.add_key(key)
     send_resp(conn, 200, Jason.encode!(%{key: key}))
   end
-
-  plug(ApiProxy.Plugs.APIKeyAuth)
 
   get "/api/v1/joke" do
     send_resp(conn, 200, "Here's a Chuck Norris joke.")

@@ -1,9 +1,15 @@
 defmodule ApiProxy.KeysManager do
+  use GenServer
   @table_name :api_keys
 
-  def start_link do
+  def start_link(_opts) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  @impl true
+  def init(_) do
     :ets.new(@table_name, [:set, :public, :named_table])
-    {:ok, self()}
+    {:ok, %{}}
   end
 
   def add_key(key) do
