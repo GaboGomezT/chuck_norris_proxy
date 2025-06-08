@@ -26,7 +26,8 @@ defmodule ApiProxy.MixProject do
       {:plug, "~> 1.15"},
       # for JSON responses
       {:jason, "~> 1.4"},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:dotenv, "~> 3.0.0"}
     ]
   end
 end

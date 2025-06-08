@@ -7,6 +7,10 @@ defmodule ApiProxy.Application do
 
   @impl true
   def start(_type, _args) do
+    # Load .env file if it exists
+    if File.exists?(".env") do
+      Dotenv.load()
+    end
     children = [
       # Starts a worker by calling: ApiProxy.Worker.start_link(arg)
       # {ApiProxy.Worker, arg}

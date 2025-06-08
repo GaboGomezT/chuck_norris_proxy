@@ -24,7 +24,6 @@ api_proxy-*.tar
 
 # Environment variables
 .env
-.env.*
 
 # IDE specific files
 .idea/
