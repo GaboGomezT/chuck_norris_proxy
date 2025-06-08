@@ -65,8 +65,8 @@ defmodule ApiProxy.KeysManagerTest do
 
       # The key should be hashed, not stored in plain text
       refute Enum.any?(table_contents, fn {stored_key, _timestamp} ->
-        stored_key == key
-      end)
+               stored_key == key
+             end)
 
       # But the key should still be valid
       assert KeysManager.valid_key?(key) == true

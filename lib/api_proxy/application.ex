@@ -11,6 +11,7 @@ defmodule ApiProxy.Application do
     unless Mix.env() == :prod do
       Envy.auto_load()
     end
+
     children = [
       # Starts a worker by calling: ApiProxy.Worker.start_link(arg)
       # {ApiProxy.Worker, arg}

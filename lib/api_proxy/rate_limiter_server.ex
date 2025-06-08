@@ -50,9 +50,10 @@ defmodule ApiProxy.RateLimiterServer do
     # Remove entries older than 2 hours
     cutoff_time = current_hour - 7200
 
-    deleted_count = :ets.select_delete(@table_name, [
-      {{{:_, :"$1"}, :_}, [{:<, :"$1", cutoff_time}], [true]}
-    ])
+    deleted_count =
+      :ets.select_delete(@table_name, [
+        {{{:_, :"$1"}, :_}, [{:<, :"$1", cutoff_time}], [true]}
+      ])
 
     Logger.debug("Rate limiter cleanup completed, deleted #{deleted_count} old entries")
   end

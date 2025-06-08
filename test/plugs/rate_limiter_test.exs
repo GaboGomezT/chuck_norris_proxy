@@ -28,25 +28,28 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "2")
 
       try do
-        conn = conn(:get, "/api/v1/joke")
-               |> RateLimiter.call([])
+        conn =
+          conn(:get, "/api/v1/joke")
+          |> RateLimiter.call([])
 
         # First request should pass
         refute conn.halted
         assert get_resp_header(conn, "x-ratelimit-limit") == ["2"]
 
         # Make second request
-        conn2 = conn(:get, "/api/v1/joke")
-                |> put_req_header("x-forwarded-for", "127.0.0.1")
-                |> RateLimiter.call([])
+        conn2 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("x-forwarded-for", "127.0.0.1")
+          |> RateLimiter.call([])
 
         refute conn2.halted
         assert get_resp_header(conn2, "x-ratelimit-limit") == ["2"]
 
         # Third request should be rate limited
-        conn3 = conn(:get, "/api/v1/joke")
-                |> put_req_header("x-forwarded-for", "127.0.0.1")
-                |> RateLimiter.call([])
+        conn3 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("x-forwarded-for", "127.0.0.1")
+          |> RateLimiter.call([])
 
         assert conn3.halted
         assert conn3.status == 429
@@ -66,8 +69,9 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.delete_env("RATE_LIMIT")
 
       try do
-        conn = conn(:get, "/api/v1/joke")
-               |> RateLimiter.call([])
+        conn =
+          conn(:get, "/api/v1/joke")
+          |> RateLimiter.call([])
 
         # Should use default limit of 100
         assert get_resp_header(conn, "x-ratelimit-limit") == ["100"]
@@ -81,12 +85,15 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
 
   describe "rate limiting logic" do
     test "allows requests under the limit" do
-      conn = conn(:get, "/api/v1/joke")
-             |> put_req_header("x-forwarded-for", "192.168.1.100")
-             |> RateLimiter.call([])
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.100")
+        |> RateLimiter.call([])
 
       refute conn.halted
-      assert get_resp_header(conn, "x-ratelimit-remaining") |> List.first() |> String.to_integer() >= 0
+
+      assert get_resp_header(conn, "x-ratelimit-remaining") |> List.first() |> String.to_integer() >=
+               0
     end
 
     test "blocks requests over the limit" do
@@ -94,16 +101,18 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # First request should pass
-      conn1 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "192.168.1.101")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.101")
+        |> RateLimiter.call([])
 
       refute conn1.halted
 
       # Second request should be blocked
-      conn2 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "192.168.1.101")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.101")
+        |> RateLimiter.call([])
 
       assert conn2.halted
       assert conn2.status == 429
@@ -123,23 +132,26 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # First IP makes a request
-      conn1 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "192.168.1.200")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.200")
+        |> RateLimiter.call([])
 
       refute conn1.halted
 
       # Different IP can still make requests
-      conn2 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "192.168.1.201")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.201")
+        |> RateLimiter.call([])
 
       refute conn2.halted
 
       # First IP is now blocked
-      conn3 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "192.168.1.200")
-              |> RateLimiter.call([])
+      conn3 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "192.168.1.200")
+        |> RateLimiter.call([])
 
       assert conn3.halted
       assert conn3.status == 429
@@ -151,25 +163,28 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # First request with forwarded IP - should succeed
-      conn1 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "203.0.113.1, 192.168.1.1")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "203.0.113.1, 192.168.1.1")
+        |> RateLimiter.call([])
 
       refute conn1.halted
       assert conn1.status != 429
 
       # Second request with same forwarded IP - should be rate limited
-      conn2 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "203.0.113.1, 192.168.1.1")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "203.0.113.1, 192.168.1.1")
+        |> RateLimiter.call([])
 
       assert conn2.halted
       assert conn2.status == 429
 
       # Request with different forwarded IP - should succeed
-      conn3 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "203.0.113.2, 192.168.1.1")
-              |> RateLimiter.call([])
+      conn3 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "203.0.113.2, 192.168.1.1")
+        |> RateLimiter.call([])
 
       refute conn3.halted
       assert conn3.status != 429
@@ -179,24 +194,27 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # First request with real-ip header - should succeed
-      conn1 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-real-ip", "203.0.113.10")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-real-ip", "203.0.113.10")
+        |> RateLimiter.call([])
 
       refute conn1.halted
 
       # Second request with same real-ip - should be rate limited
-      conn2 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-real-ip", "203.0.113.10")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-real-ip", "203.0.113.10")
+        |> RateLimiter.call([])
 
       assert conn2.halted
       assert conn2.status == 429
 
       # Request with different real-ip - should succeed
-      conn3 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-real-ip", "203.0.113.11")
-              |> RateLimiter.call([])
+      conn3 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-real-ip", "203.0.113.11")
+        |> RateLimiter.call([])
 
       refute conn3.halted
     end
@@ -205,15 +223,17 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # First request using remote_ip - should succeed
-      conn1 = conn(:get, "/api/v1/joke")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> RateLimiter.call([])
 
       refute conn1.halted
 
       # Second request using same remote_ip - should be rate limited
       # Note: Plug.Test always uses {127, 0, 0, 1} as remote_ip
-      conn2 = conn(:get, "/api/v1/joke")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> RateLimiter.call([])
 
       assert conn2.halted
       assert conn2.status == 429
@@ -223,25 +243,28 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       System.put_env("RATE_LIMIT", "1")
 
       # Request with both headers - should use x-forwarded-for
-      conn1 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "203.0.113.20")
-              |> put_req_header("x-real-ip", "203.0.113.21")
-              |> RateLimiter.call([])
+      conn1 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "203.0.113.20")
+        |> put_req_header("x-real-ip", "203.0.113.21")
+        |> RateLimiter.call([])
 
       refute conn1.halted
 
       # Same x-forwarded-for should be rate limited
-      conn2 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-forwarded-for", "203.0.113.20")
-              |> put_req_header("x-real-ip", "203.0.113.21")
-              |> RateLimiter.call([])
+      conn2 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-forwarded-for", "203.0.113.20")
+        |> put_req_header("x-real-ip", "203.0.113.21")
+        |> RateLimiter.call([])
 
       assert conn2.halted
 
       # Request with only x-real-ip (different IP) should succeed
-      conn3 = conn(:get, "/api/v1/joke")
-              |> put_req_header("x-real-ip", "203.0.113.21")
-              |> RateLimiter.call([])
+      conn3 =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("x-real-ip", "203.0.113.21")
+        |> RateLimiter.call([])
 
       refute conn3.halted
     end
@@ -258,8 +281,9 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
       ]
 
       for path <- non_rate_limited_paths do
-        conn = conn(:get, path)
-               |> RateLimiter.call([])
+        conn =
+          conn(:get, path)
+          |> RateLimiter.call([])
 
         refute conn.halted
         assert get_resp_header(conn, "x-ratelimit-limit") == []
@@ -267,8 +291,9 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
     end
 
     test "rate limits /api/v1/joke endpoint" do
-      conn = conn(:get, "/api/v1/joke")
-             |> RateLimiter.call([])
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> RateLimiter.call([])
 
       # Should have rate limit headers even if not blocked
       assert get_resp_header(conn, "x-ratelimit-limit") != []
@@ -277,7 +302,10 @@ defmodule ApiProxy.Plugs.RateLimiterTest do
 
       # Verify header values are valid integers
       limit = get_resp_header(conn, "x-ratelimit-limit") |> List.first() |> String.to_integer()
-      remaining = get_resp_header(conn, "x-ratelimit-remaining") |> List.first() |> String.to_integer()
+
+      remaining =
+        get_resp_header(conn, "x-ratelimit-remaining") |> List.first() |> String.to_integer()
+
       reset = get_resp_header(conn, "x-ratelimit-reset") |> List.first() |> String.to_integer()
 
       assert limit > 0

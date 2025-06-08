@@ -209,5 +209,4 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
       assert conn.status != 401
     end
   end
-
 end

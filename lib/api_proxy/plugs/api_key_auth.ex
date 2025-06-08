@@ -17,6 +17,7 @@ defmodule ApiProxy.Plugs.APIKeyAuth do
             |> send_resp(401, "Unauthorized")
             |> halt()
           end
+
         _ ->
           conn
           |> send_resp(401, "Unauthorized")

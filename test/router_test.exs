@@ -15,8 +15,9 @@ defmodule ApiProxy.RouterTest do
 
   describe "GET /api-keys-generator" do
     test "serves the HTML page" do
-      conn = conn(:get, "/api-keys-generator")
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api-keys-generator")
+        |> Router.call(@opts)
 
       assert conn.status == 200
       assert get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
@@ -24,8 +25,9 @@ defmodule ApiProxy.RouterTest do
     end
 
     test "does not require authentication" do
-      conn = conn(:get, "/api-keys-generator")
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api-keys-generator")
+        |> Router.call(@opts)
 
       assert conn.status == 200
       refute conn.halted
@@ -34,8 +36,9 @@ defmodule ApiProxy.RouterTest do
 
   describe "POST /api/v1/keys" do
     test "generates a new API key" do
-      conn = conn(:post, "/api/v1/keys")
-             |> Router.call(@opts)
+      conn =
+        conn(:post, "/api/v1/keys")
+        |> Router.call(@opts)
 
       assert conn.status == 200
 
@@ -48,23 +51,26 @@ defmodule ApiProxy.RouterTest do
 
     test "generated key is valid for authentication" do
       # Generate a key
-      conn = conn(:post, "/api/v1/keys")
-             |> Router.call(@opts)
+      conn =
+        conn(:post, "/api/v1/keys")
+        |> Router.call(@opts)
 
       {:ok, response} = Jason.decode(conn.resp_body)
       api_key = response["key"]
 
       # Use the key to access protected endpoint
-      protected_conn = conn(:get, "/api/v1/joke")
-                       |> put_req_header("X-API-Key", api_key)
-                       |> Router.call(@opts)
+      protected_conn =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("X-API-Key", api_key)
+        |> Router.call(@opts)
 
       assert protected_conn.status == 200
     end
 
     test "does not require authentication" do
-      conn = conn(:post, "/api/v1/keys")
-             |> Router.call(@opts)
+      conn =
+        conn(:post, "/api/v1/keys")
+        |> Router.call(@opts)
 
       assert conn.status == 200
       refute conn.halted
@@ -83,8 +89,9 @@ defmodule ApiProxy.RouterTest do
 
   describe "GET /api/v1/joke" do
     test "requires authentication" do
-      conn = conn(:get, "/api/v1/joke")
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> Router.call(@opts)
 
       assert conn.status == 401
       assert conn.resp_body == "Unauthorized"
@@ -97,9 +104,10 @@ defmodule ApiProxy.RouterTest do
       api_key = response["key"]
 
       # Use API key to get joke
-      conn = conn(:get, "/api/v1/joke")
-             |> put_req_header("X-API-Key", api_key)
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("X-API-Key", api_key)
+        |> Router.call(@opts)
 
       assert conn.status == 200
       assert conn.resp_body == "Here's a Chuck Norris joke."
@@ -112,10 +120,11 @@ defmodule ApiProxy.RouterTest do
       api_key = response["key"]
 
       # Make request
-      conn = conn(:get, "/api/v1/joke")
-             |> put_req_header("X-API-Key", api_key)
-             |> put_req_header("x-forwarded-for", "192.168.1.100")
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-forwarded-for", "192.168.1.100")
+        |> Router.call(@opts)
 
       assert conn.status == 200
       assert get_resp_header(conn, "x-ratelimit-limit") != []
@@ -135,18 +144,20 @@ defmodule ApiProxy.RouterTest do
         api_key = response["key"]
 
         # First request should succeed
-        conn1 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.101")
-                |> Router.call(@opts)
+        conn1 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.101")
+          |> Router.call(@opts)
 
         assert conn1.status == 200
 
         # Second request should be rate limited
-        conn2 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.101")
-                |> Router.call(@opts)
+        conn2 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.101")
+          |> Router.call(@opts)
 
         assert conn2.status == 429
         {:ok, error_response} = Jason.decode(conn2.resp_body)
@@ -163,8 +174,9 @@ defmodule ApiProxy.RouterTest do
 
   describe "404 handling" do
     test "returns 404 for unknown routes" do
-      conn = conn(:get, "/unknown/route")
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/unknown/route")
+        |> Router.call(@opts)
 
       assert conn.status == 404
       assert conn.resp_body == "Oops!"
@@ -176,9 +188,10 @@ defmodule ApiProxy.RouterTest do
       {:ok, response} = Jason.decode(key_conn.resp_body)
       api_key = response["key"]
 
-      conn = conn(:get, "/unknown/route")
-             |> put_req_header("X-API-Key", api_key)
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/unknown/route")
+        |> put_req_header("X-API-Key", api_key)
+        |> Router.call(@opts)
 
       assert conn.status == 404
       assert conn.resp_body == "Oops!"
@@ -188,8 +201,9 @@ defmodule ApiProxy.RouterTest do
       methods = [:post, :put, :delete, :patch]
 
       for method <- methods do
-        conn = conn(method, "/unknown/route")
-               |> Router.call(@opts)
+        conn =
+          conn(method, "/unknown/route")
+          |> Router.call(@opts)
 
         assert conn.status == 404
         assert conn.resp_body == "Oops!"
@@ -211,27 +225,30 @@ defmodule ApiProxy.RouterTest do
         api_key = response["key"]
 
         # Step 2: Use key successfully (first request)
-        conn1 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.200")
-                |> Router.call(@opts)
+        conn1 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.200")
+          |> Router.call(@opts)
 
         assert conn1.status == 200
         assert conn1.resp_body == "Here's a Chuck Norris joke."
 
         # Step 3: Use key successfully (second request)
-        conn2 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.200")
-                |> Router.call(@opts)
+        conn2 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.200")
+          |> Router.call(@opts)
 
         assert conn2.status == 200
 
         # Step 4: Get rate limited (third request)
-        conn3 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.200")
-                |> Router.call(@opts)
+        conn3 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.200")
+          |> Router.call(@opts)
 
         assert conn3.status == 429
         {:ok, error_response} = Jason.decode(conn3.resp_body)
@@ -256,26 +273,29 @@ defmodule ApiProxy.RouterTest do
         api_key = response["key"]
 
         # IP 1 uses up its limit
-        conn1 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.201")
-                |> Router.call(@opts)
+        conn1 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.201")
+          |> Router.call(@opts)
 
         assert conn1.status == 200
 
         # IP 1 gets rate limited
-        conn2 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.201")
-                |> Router.call(@opts)
+        conn2 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.201")
+          |> Router.call(@opts)
 
         assert conn2.status == 429
 
         # IP 2 can still make requests
-        conn3 = conn(:get, "/api/v1/joke")
-                |> put_req_header("X-API-Key", api_key)
-                |> put_req_header("x-forwarded-for", "192.168.1.202")
-                |> Router.call(@opts)
+        conn3 =
+          conn(:get, "/api/v1/joke")
+          |> put_req_header("X-API-Key", api_key)
+          |> put_req_header("x-forwarded-for", "192.168.1.202")
+          |> Router.call(@opts)
 
         assert conn3.status == 200
       after
@@ -290,9 +310,10 @@ defmodule ApiProxy.RouterTest do
 
   describe "error handling" do
     test "handles malformed requests gracefully" do
-      conn = conn(:get, "/api/v1/joke")
-             |> put_req_header("X-API-Key", nil)
-             |> Router.call(@opts)
+      conn =
+        conn(:get, "/api/v1/joke")
+        |> put_req_header("X-API-Key", nil)
+        |> Router.call(@opts)
 
       assert conn.status == 401
     end
@@ -300,8 +321,9 @@ defmodule ApiProxy.RouterTest do
     test "handles very long URLs" do
       long_path = "/api/v1/" <> String.duplicate("a", 1000)
 
-      conn = conn(:get, long_path)
-             |> Router.call(@opts)
+      conn =
+        conn(:get, long_path)
+        |> Router.call(@opts)
 
       assert conn.status == 404
       assert conn.resp_body == "Oops!"
