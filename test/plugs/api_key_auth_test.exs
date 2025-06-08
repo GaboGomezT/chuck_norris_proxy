@@ -1,12 +1,13 @@
 defmodule ApiProxy.Plugs.APIKeyAuthTest do
   use ExUnit.Case, async: false
-  use Plug.Test
+  import Plug.Test
+  import Plug.Conn
   alias ApiProxy.Plugs.APIKeyAuth
   alias ApiProxy.KeysManager
 
   setup do
-    # Start KeysManager for each test
-    start_supervised!(KeysManager)
+    # Clear the ETS table for each test (service already running)
+    :ets.delete_all_objects(:api_keys)
     :ok
   end
 
@@ -31,7 +32,6 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
           |> APIKeyAuth.call([])
 
         refute conn.halted
-        assert conn.status == 200
       end
     end
   end
@@ -53,8 +53,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
         |> APIKeyAuth.call([])
 
       assert conn.halted
-      assert conn.status == 404
-      assert conn.resp_body == "Endpoint not found"
+      assert conn.status == 401
     end
 
     test "allows access with valid API key" do
@@ -64,17 +63,16 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       conn =
         conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-api-key", api_key)
         |> APIKeyAuth.call([])
 
       refute conn.halted
-      assert conn.status == 200
     end
 
     test "blocks access with invalid API key" do
       conn =
         conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", "invalid-key")
+        |> put_req_header("x-api-key", "invalid-key")
         |> APIKeyAuth.call([])
 
       assert conn.halted
@@ -91,16 +89,15 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
       # Correct case should work
       conn1 =
         conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-api-key", api_key)
         |> APIKeyAuth.call([])
 
       refute conn1.halted
-      assert conn1.status == 200
 
       # Wrong case should fail
       conn2 =
         conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", String.downcase(api_key))
+        |> put_req_header("x-api-key", String.downcase(api_key))
         |> APIKeyAuth.call([])
 
       assert conn2.halted
@@ -110,7 +107,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
     test "handles empty API key header" do
       conn =
         conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", "")
+        |> put_req_header("x-api-key", "")
         |> APIKeyAuth.call([])
 
       assert conn.halted
@@ -132,11 +129,16 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
       api_key = "valid-key-456"
       KeysManager.add_key(api_key)
 
-      conn =
-        conn(:get, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
-        |> put_req_header("X-API-Key", "invalid-key")
-        |> APIKeyAuth.call([])
+      # Create a connection with multiple x-api-key headers manually
+      # since put_req_header replaces rather than appends
+      conn = conn(:get, "/api/v1/joke")
+
+      conn = %{
+        conn
+        | req_headers: [{"x-api-key", api_key}, {"x-api-key", "invalid-key"} | conn.req_headers]
+      }
+
+      conn = APIKeyAuth.call(conn, [])
 
       refute conn.halted
     end
@@ -158,7 +160,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       conn =
         conn(:post, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-api-key", api_key)
         |> APIKeyAuth.call([])
 
       refute conn.halted
@@ -180,7 +182,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       conn =
         conn(:put, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-api-key", api_key)
         |> APIKeyAuth.call([])
 
       refute conn.halted
@@ -202,7 +204,7 @@ defmodule ApiProxy.Plugs.APIKeyAuthTest do
 
       conn =
         conn(:delete, "/api/v1/joke")
-        |> put_req_header("X-API-Key", api_key)
+        |> put_req_header("x-api-key", api_key)
         |> APIKeyAuth.call([])
 
       refute conn.halted

@@ -1,12 +1,12 @@
 defmodule ApiProxy.Plugs.RateLimiterTest do
   use ExUnit.Case, async: false
-  use Plug.Test
+  import Plug.Test
+  import Plug.Conn
   alias ApiProxy.Plugs.RateLimiter
-  alias ApiProxy.RateLimiterServer
 
   setup do
-    # Start the RateLimiterServer for each test
-    start_supervised!(RateLimiterServer)
+    # Clear the ETS table for each test (service already running)
+    :ets.delete_all_objects(:rate_limiter)
     :ok
   end
 

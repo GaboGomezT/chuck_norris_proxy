@@ -18,8 +18,10 @@ defmodule ApiProxy.KeysManager do
     key
   end
 
-  def valid_key?(key) do
+  def valid_key?(key) when is_binary(key) do
     hashed_key = :crypto.hash(:sha256, key)
     :ets.member(@table_name, hashed_key)
   end
+
+  def valid_key?(_key), do: false
 end

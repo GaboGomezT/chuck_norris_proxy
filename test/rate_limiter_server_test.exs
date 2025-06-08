@@ -3,8 +3,8 @@ defmodule ApiProxy.RateLimiterServerTest do
   alias ApiProxy.RateLimiterServer
 
   setup do
-    # Start a fresh RateLimiterServer for each test
-    start_supervised!(RateLimiterServer)
+    # Clear the ETS table for each test (service already running)
+    :ets.delete_all_objects(:rate_limiter)
     :ok
   end
 

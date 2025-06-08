@@ -3,8 +3,8 @@ defmodule ApiProxy.KeysManagerTest do
   alias ApiProxy.KeysManager
 
   setup do
-    # Start a fresh KeysManager for each test
-    start_supervised!(KeysManager)
+    # Clear the ETS table for each test (service already running)
+    :ets.delete_all_objects(:api_keys)
     :ok
   end
 
