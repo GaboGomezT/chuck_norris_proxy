@@ -12,13 +12,18 @@ defmodule ChuckNorrisProxy.Application do
       Envy.auto_load()
     end
 
-    children = [
-      # Starts a worker by calling: ChuckNorrisProxy.Worker.start_link(arg)
-      # {ChuckNorrisProxy.Worker, arg}
+    # Base children that always start
+    base_children = [
       {ChuckNorrisProxy.Servers.ApiKeyStore, []},
-      {ChuckNorrisProxy.Servers.RateLimiter, []},
-      {Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}
+      {ChuckNorrisProxy.Servers.RateLimiter, []}
     ]
+
+    # Only start the web server if not in test environment
+    children = if Mix.env() != :test do
+      base_children ++ [{Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}]
+    else
+      base_children
+    end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

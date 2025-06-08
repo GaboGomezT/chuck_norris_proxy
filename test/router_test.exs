@@ -112,14 +112,9 @@ defmodule ChuckNorrisProxy.RouterTest do
 
       assert conn.status == 200
 
-      assert conn.resp_body ==
-               Jason.encode!(%{
-                 categories: [],
-                 created_at: "2020-01-05 13:42:19.314155",
-                 id: "P-vC4QGnRyGg0YvS_U-_Zw",
-                 updated_at: "2020-01-05 13:42:19.314155",
-                 value: "Chuck Norris can unscramble an egg."
-               })
+      # The response should match our mock data
+      {:ok, expected} = ChuckNorrisProxy.Test.MockAPIClient.get_random_joke()
+      assert conn.resp_body == Jason.encode!(expected.body)
     end
 
     test "includes rate limit headers" do
@@ -168,6 +163,112 @@ defmodule ChuckNorrisProxy.RouterTest do
         {:ok, error_response} = Jason.decode(conn2.resp_body)
         assert error_response["error"] == "Rate limit exceeded"
       end)
+    end
+  end
+
+  describe "GET /api/v1/joke/:category" do
+    test "returns joke in category with valid API key" do
+      # Generate API key
+      key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
+      {:ok, response} = Jason.decode(key_conn.resp_body)
+      api_key = response["key"]
+
+      # Use API key to get joke in category
+      conn =
+        conn(:get, "/api/v1/joke/dev")
+        |> put_req_header("x-api-key", api_key)
+        |> Router.call(@opts)
+
+      assert conn.status == 200
+
+      # The response should match our mock data
+      {:ok, expected} = ChuckNorrisProxy.Test.MockAPIClient.get_random_joke_by_category("dev")
+      assert conn.resp_body == Jason.encode!(expected.body)
+    end
+
+    test "requires authentication" do
+      conn =
+        conn(:get, "/api/v1/joke/dev")
+        |> Router.call(@opts)
+
+      assert conn.status == 401
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
+    end
+  end
+
+  describe "GET /api/v1/categories" do
+    test "returns categories with valid API key" do
+      # Generate API key
+      key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
+      {:ok, response} = Jason.decode(key_conn.resp_body)
+      api_key = response["key"]
+
+      # Use API key to get categories
+      conn =
+        conn(:get, "/api/v1/categories")
+        |> put_req_header("x-api-key", api_key)
+        |> Router.call(@opts)
+
+      assert conn.status == 200
+
+      # The response should match our mock data
+      {:ok, expected} = ChuckNorrisProxy.Test.MockAPIClient.get_categories()
+      assert conn.resp_body == Jason.encode!(expected.body)
+    end
+
+    test "requires authentication" do
+      conn =
+        conn(:get, "/api/v1/categories")
+        |> Router.call(@opts)
+
+      assert conn.status == 401
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
+    end
+  end
+
+  describe "GET /api/v1/search" do
+    test "returns search results with valid API key" do
+      # Generate API key
+      key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
+      {:ok, response} = Jason.decode(key_conn.resp_body)
+      api_key = response["key"]
+
+      # Use API key to search jokes
+      conn =
+        conn(:get, "/api/v1/search?query=test")
+        |> put_req_header("x-api-key", api_key)
+        |> Router.call(@opts)
+
+      assert conn.status == 200
+
+      # The response should match our mock data
+      {:ok, expected} = ChuckNorrisProxy.Test.MockAPIClient.search_jokes("test")
+      assert conn.resp_body == Jason.encode!(expected.body)
+    end
+
+    test "requires query parameter" do
+      # Generate API key
+      key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
+      {:ok, response} = Jason.decode(key_conn.resp_body)
+      api_key = response["key"]
+
+      # Try to search without query
+      conn =
+        conn(:get, "/api/v1/search")
+        |> put_req_header("x-api-key", api_key)
+        |> Router.call(@opts)
+
+      assert conn.status == 400
+      assert conn.resp_body == Jason.encode!(%{error: "Query parameter is required"})
+    end
+
+    test "requires authentication" do
+      conn =
+        conn(:get, "/api/v1/search?query=test")
+        |> Router.call(@opts)
+
+      assert conn.status == 401
+      assert conn.resp_body == Jason.encode!(%{message: "Unauthorized"})
     end
   end
 

@@ -27,7 +27,9 @@ defmodule ChuckNorrisProxy.MixProject do
       # for JSON responses
       {:jason, "~> 1.4"},
       {:uuid, "~> 1.1"},
-      {:envy, "~> 1.1.1"}
+      {:envy, "~> 1.1.1"},
+      {:tesla, "~> 1.8"},
+      {:hackney, "~> 1.18"} # HTTP client adapter for Tesla
     ]
   end
 end

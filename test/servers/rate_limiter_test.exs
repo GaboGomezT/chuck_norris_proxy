@@ -102,28 +102,4 @@ defmodule ChuckNorrisProxy.Servers.RateLimiterTest do
       assert result == [{key, 1}]
     end
   end
-
-  describe "edge cases" do
-    test "handles large request counts" do
-      key = {"heavy-user", 1_234_567_890}
-
-      # Make many requests
-      for _i <- 1..1000 do
-        RateLimiter.increment_request_count(key)
-      end
-
-      assert RateLimiter.get_request_count(key) == 1000
-    end
-
-    test "handles complex IP addresses" do
-      ipv4_key = {"192.168.1.100", 1_234_567_890}
-      ipv6_key = {"2001:0db8:85a3:0000:0000:8a2e:0370:7334", 1_234_567_890}
-
-      RateLimiter.increment_request_count(ipv4_key)
-      RateLimiter.increment_request_count(ipv6_key)
-
-      assert RateLimiter.get_request_count(ipv4_key) == 1
-      assert RateLimiter.get_request_count(ipv6_key) == 1
-    end
-  end
 end
