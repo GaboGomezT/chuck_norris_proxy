@@ -2,6 +2,7 @@ defmodule ApiProxy.Router do
   use Plug.Router
 
   plug(:match)
+  plug(ApiProxy.Plugs.RateLimiter, limit: 2)  # 50 requests per hour
   plug(ApiProxy.Plugs.APIKeyAuth)
   plug(:dispatch)
 

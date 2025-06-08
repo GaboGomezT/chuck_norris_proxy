@@ -11,6 +11,7 @@ defmodule ApiProxy.Application do
       # Starts a worker by calling: ApiProxy.Worker.start_link(arg)
       # {ApiProxy.Worker, arg}
       {ApiProxy.KeysManager, []},
+      {ApiProxy.RateLimiterServer, []},
       {Plug.Cowboy, scheme: :http, plug: ApiProxy.Router, options: [port: 4000]}
     ]
 
