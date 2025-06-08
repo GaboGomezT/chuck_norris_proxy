@@ -1,21 +1,21 @@
-defmodule ApiProxy.Router do
+defmodule ChuckNorrisProxy.Router do
   use Plug.Router
 
   plug(:match)
   # configurable rate limit via RATE_LIMIT env var
-  plug(ApiProxy.Plugs.RateLimiter)
-  plug(ApiProxy.Plugs.APIKeyAuth)
+  plug(ChuckNorrisProxy.Plugs.RateLimiter)
+  plug(ChuckNorrisProxy.Plugs.APIKeyAuth)
   plug(:dispatch)
 
   get "/api-keys-generator" do
     conn
     |> put_resp_content_type("text/html")
-    |> send_file(200, Path.join(:code.priv_dir(:api_proxy), "static/index.html"))
+    |> send_file(200, Path.join(:code.priv_dir(:chuck_norris_proxy), "static/index.html"))
   end
 
   post "/api/v1/keys" do
     key = UUID.uuid4()
-    ApiProxy.Servers.ApiKeyStore.add_key(key)
+    ChuckNorrisProxy.Servers.ApiKeyStore.add_key(key)
     send_resp(conn, 200, Jason.encode!(%{key: key}))
   end
 

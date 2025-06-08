@@ -1,4 +1,4 @@
-defmodule ApiProxy.Test.EnvHelper do
+defmodule ChuckNorrisProxy.Test.EnvHelper do
   @moduledoc """
   Helper functions for managing environment variables in tests.
   """

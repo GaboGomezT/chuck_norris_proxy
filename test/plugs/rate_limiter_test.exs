@@ -1,9 +1,9 @@
-defmodule ApiProxy.Plugs.RateLimiterTest do
+defmodule ChuckNorrisProxy.Plugs.RateLimiterTest do
   use ExUnit.Case, async: false
   import Plug.Test
   import Plug.Conn
-  import ApiProxy.Test.EnvHelper
-  alias ApiProxy.Plugs.RateLimiter
+  import ChuckNorrisProxy.Test.EnvHelper
+  alias ChuckNorrisProxy.Plugs.RateLimiter
 
   setup do
     # Clear the ETS table for each test (service already running)

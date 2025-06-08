@@ -1,4 +1,4 @@
-defmodule ApiProxy.Application do
+defmodule ChuckNorrisProxy.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -13,16 +13,16 @@ defmodule ApiProxy.Application do
     end
 
     children = [
-      # Starts a worker by calling: ApiProxy.Worker.start_link(arg)
-      # {ApiProxy.Worker, arg}
-      {ApiProxy.Servers.ApiKeyStore, []},
-      {ApiProxy.Servers.RateLimiter, []},
-      {Plug.Cowboy, scheme: :http, plug: ApiProxy.Router, options: [port: 4000]}
+      # Starts a worker by calling: ChuckNorrisProxy.Worker.start_link(arg)
+      # {ChuckNorrisProxy.Worker, arg}
+      {ChuckNorrisProxy.Servers.ApiKeyStore, []},
+      {ChuckNorrisProxy.Servers.RateLimiter, []},
+      {Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: ApiProxy.Supervisor]
+    opts = [strategy: :one_for_one, name: ChuckNorrisProxy.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

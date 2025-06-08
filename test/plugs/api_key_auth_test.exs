@@ -1,9 +1,9 @@
-defmodule ApiProxy.Plugs.APIKeyAuthTest do
+defmodule ChuckNorrisProxy.Plugs.APIKeyAuthTest do
   use ExUnit.Case, async: false
   import Plug.Test
   import Plug.Conn
-  alias ApiProxy.Plugs.APIKeyAuth
-  alias ApiProxy.Servers.ApiKeyStore
+  alias ChuckNorrisProxy.Plugs.APIKeyAuth
+  alias ChuckNorrisProxy.Servers.ApiKeyStore
 
   setup do
     # Clear the ETS table for each test (service already running)

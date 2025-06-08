@@ -1,12 +1,12 @@
-defmodule ApiProxyTest do
+defmodule ChuckNorrisProxyTest do
   use ExUnit.Case
-  import ApiProxy.Test.EnvHelper
+  import ChuckNorrisProxy.Test.EnvHelper
 
   describe "Application startup" do
     test "application starts successfully" do
       # The application should already be started by test_helper.exs
-          assert Process.whereis(ApiProxy.Servers.ApiKeyStore) != nil
-    assert Process.whereis(ApiProxy.Servers.RateLimiter) != nil
+      assert Process.whereis(ChuckNorrisProxy.Servers.ApiKeyStore) != nil
+      assert Process.whereis(ChuckNorrisProxy.Servers.RateLimiter) != nil
     end
 
     test "ETS tables are created" do

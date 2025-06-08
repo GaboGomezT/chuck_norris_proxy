@@ -1,4 +1,4 @@
-defmodule ApiProxy.Plugs.RateLimiter do
+defmodule ChuckNorrisProxy.Plugs.RateLimiter do
   import Plug.Conn
   require Logger
 
@@ -24,7 +24,7 @@ defmodule ApiProxy.Plugs.RateLimiter do
         current_hour = get_current_hour()
         key = {client_ip, current_hour}
 
-        current_count = ApiProxy.Servers.RateLimiter.get_request_count(key)
+        current_count = ChuckNorrisProxy.Servers.RateLimiter.get_request_count(key)
 
         case current_count do
           count when count >= limit ->
@@ -43,7 +43,7 @@ defmodule ApiProxy.Plugs.RateLimiter do
             |> halt()
 
           count ->
-            ApiProxy.Servers.RateLimiter.increment_request_count(key)
+            ChuckNorrisProxy.Servers.RateLimiter.increment_request_count(key)
             remaining = max(0, limit - count - 1)
 
             conn

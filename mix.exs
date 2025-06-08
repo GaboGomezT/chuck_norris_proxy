@@ -1,9 +1,9 @@
-defmodule ApiProxy.MixProject do
+defmodule ChuckNorrisProxy.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :api_proxy,
+      app: :chuck_norris_proxy,
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
@@ -15,7 +15,7 @@ defmodule ApiProxy.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ApiProxy.Application, []}
+      mod: {ChuckNorrisProxy.Application, []}
     ]
   end
 

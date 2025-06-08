@@ -1,4 +1,4 @@
-defmodule ApiProxy.Servers.ApiKeyStore do
+defmodule ChuckNorrisProxy.Servers.ApiKeyStore do
   use GenServer
   require Logger
   @table_name :api_keys

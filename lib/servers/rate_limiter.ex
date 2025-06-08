@@ -1,4 +1,4 @@
-defmodule ApiProxy.Servers.RateLimiter do
+defmodule ChuckNorrisProxy.Servers.RateLimiter do
   use GenServer
   require Logger
 

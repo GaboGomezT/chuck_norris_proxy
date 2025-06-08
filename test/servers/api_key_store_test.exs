@@ -1,6 +1,6 @@
-defmodule ApiProxy.Servers.ApiKeyStoreTest do
+defmodule ChuckNorrisProxy.Servers.ApiKeyStoreTest do
   use ExUnit.Case, async: false
-  alias ApiProxy.Servers.ApiKeyStore
+  alias ChuckNorrisProxy.Servers.ApiKeyStore
 
   setup do
     # Clear the ETS table for each test (service already running)

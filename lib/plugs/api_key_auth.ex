@@ -1,4 +1,4 @@
-defmodule ApiProxy.Plugs.APIKeyAuth do
+defmodule ChuckNorrisProxy.Plugs.APIKeyAuth do
   import Plug.Conn
 
   def init(opts), do: opts
@@ -10,7 +10,7 @@ defmodule ApiProxy.Plugs.APIKeyAuth do
     else
       case get_req_header(conn, "x-api-key") do
         [key | _] when is_binary(key) and key != "" ->
-          if ApiProxy.Servers.ApiKeyStore.valid_key?(key) do
+          if ChuckNorrisProxy.Servers.ApiKeyStore.valid_key?(key) do
             conn
           else
             conn

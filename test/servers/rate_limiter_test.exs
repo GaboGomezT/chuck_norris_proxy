@@ -1,6 +1,6 @@
-defmodule ApiProxy.Servers.RateLimiterTest do
+defmodule ChuckNorrisProxy.Servers.RateLimiterTest do
   use ExUnit.Case, async: false
-  alias ApiProxy.Servers.RateLimiter
+  alias ChuckNorrisProxy.Servers.RateLimiter
 
   setup do
     # Clear the ETS table for each test (service already running)

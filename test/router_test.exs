@@ -1,9 +1,9 @@
-defmodule ApiProxy.RouterTest do
+defmodule ChuckNorrisProxy.RouterTest do
   use ExUnit.Case, async: false
   import Plug.Test
   import Plug.Conn
-  import ApiProxy.Test.EnvHelper
-  alias ApiProxy.Router
+  import ChuckNorrisProxy.Test.EnvHelper
+  alias ChuckNorrisProxy.Router
 
   @opts Router.init([])
 
