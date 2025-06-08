@@ -2,6 +2,7 @@ defmodule ApiProxy.RouterTest do
   use ExUnit.Case, async: false
   import Plug.Test
   import Plug.Conn
+  import ApiProxy.Test.EnvHelper
   alias ApiProxy.Router
 
   @opts Router.init([])
@@ -141,11 +142,7 @@ defmodule ApiProxy.RouterTest do
     end
 
     test "enforces rate limiting" do
-      # Set a very low rate limit for this test
-      original_env = System.get_env("RATE_LIMIT")
-      System.put_env("RATE_LIMIT", "1")
-
-      try do
+      with_env("RATE_LIMIT", "1", fn ->
         # Generate API key
         key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
         {:ok, response} = Jason.decode(key_conn.resp_body)
@@ -170,23 +167,13 @@ defmodule ApiProxy.RouterTest do
         assert conn2.status == 429
         {:ok, error_response} = Jason.decode(conn2.resp_body)
         assert error_response["error"] == "Rate limit exceeded"
-      after
-        if original_env do
-          System.put_env("RATE_LIMIT", original_env)
-        else
-          System.delete_env("RATE_LIMIT")
-        end
-      end
+      end)
     end
   end
 
   describe "integration flow" do
     test "complete user flow: generate key -> use key -> get rate limited" do
-      # Set low rate limit
-      original_env = System.get_env("RATE_LIMIT")
-      System.put_env("RATE_LIMIT", "2")
-
-      try do
+      with_env("RATE_LIMIT", "2", fn ->
         # Step 1: Generate API key
         key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
         assert key_conn.status == 200
@@ -230,20 +217,11 @@ defmodule ApiProxy.RouterTest do
         assert conn3.status == 429
         {:ok, error_response} = Jason.decode(conn3.resp_body)
         assert error_response["error"] == "Rate limit exceeded"
-      after
-        if original_env do
-          System.put_env("RATE_LIMIT", original_env)
-        else
-          System.delete_env("RATE_LIMIT")
-        end
-      end
+      end)
     end
 
     test "different IPs have independent rate limits" do
-      original_env = System.get_env("RATE_LIMIT")
-      System.put_env("RATE_LIMIT", "1")
-
-      try do
+      with_env("RATE_LIMIT", "1", fn ->
         # Generate API key
         key_conn = conn(:post, "/api/v1/keys") |> Router.call(@opts)
         {:ok, response} = Jason.decode(key_conn.resp_body)
@@ -275,13 +253,7 @@ defmodule ApiProxy.RouterTest do
           |> Router.call(@opts)
 
         assert conn3.status == 200
-      after
-        if original_env do
-          System.put_env("RATE_LIMIT", original_env)
-        else
-          System.delete_env("RATE_LIMIT")
-        end
-      end
+      end)
     end
   end
 
