@@ -8,9 +8,23 @@ defmodule ChuckNorrisProxy.APIClient do
       |> Tesla.run(next)
       |> case do
         {:ok, %{status: status, body: body} = response_env} when status in 200..299 and is_map(body) ->
-          transformed_body = Map.drop(body, ["icon_url", "url"])
+          transformed_body = transform_response_body(body)
           {:ok, %{response_env | body: transformed_body}}
         other -> other
+      end
+    end
+
+    defp transform_response_body(body) when is_map(body) do
+      body
+      |> Map.drop(["icon_url", "url"])
+      |> case do
+        %{"result" => results} = response when is_list(results) ->
+          # Handle search results - transform each joke in the result array
+          transformed_results = Enum.map(results, &Map.drop(&1, ["icon_url", "url"]))
+          %{response | "result" => transformed_results}
+        response ->
+          # Handle single joke response or other responses
+          response
       end
     end
   end
