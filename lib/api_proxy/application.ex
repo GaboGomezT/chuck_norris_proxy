@@ -7,9 +7,9 @@ defmodule ApiProxy.Application do
 
   @impl true
   def start(_type, _args) do
-    # Load .env file if it exists
-    if File.exists?(".env") do
-      Dotenv.load()
+    # Load .env file if it exists (dev and test only)
+    unless Mix.env() == :prod do
+      Envy.auto_load()
     end
     children = [
       # Starts a worker by calling: ApiProxy.Worker.start_link(arg)

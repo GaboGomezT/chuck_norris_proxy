@@ -5,10 +5,15 @@ defmodule ApiProxy.Plugs.RateLimiter do
   @default_limit 100  # Default: 100 requests per hour
 
   def init(opts) do
-    Keyword.get(opts, :limit, @default_limit)
+    # We'll read the limit at runtime, so just pass through the options
+    opts
   end
 
-  def call(conn, limit) do
+  def call(conn, opts) do
+    # Read limit from environment at runtime, with fallback to options, then default
+    limit = System.get_env("RATE_LIMIT", "#{@default_limit}")
+            |> String.to_integer()
+            |> then(fn env_limit -> Keyword.get(opts, :limit, env_limit) end)
     # Only rate limit the /api/v1/joke endpoint
     case conn.request_path do
       "/api/v1/joke" ->

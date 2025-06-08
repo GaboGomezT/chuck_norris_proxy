@@ -2,7 +2,7 @@ defmodule ApiProxy.Router do
   use Plug.Router
 
   plug(:match)
-  plug(ApiProxy.Plugs.RateLimiter, limit: System.get_env("RATE_LIMIT", "50") |> String.to_integer())  # configurable rate limit
+  plug(ApiProxy.Plugs.RateLimiter)  # configurable rate limit via RATE_LIMIT env var
   plug(ApiProxy.Plugs.APIKeyAuth)
   plug(:dispatch)
 
