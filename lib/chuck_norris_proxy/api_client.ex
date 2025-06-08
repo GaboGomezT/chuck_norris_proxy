@@ -4,11 +4,19 @@ defmodule ChuckNorrisProxy.APIClient do
   end
 
   defp tesla_client do
-    Tesla.client([
+    middleware = [
       {Tesla.Middleware.BaseUrl, "https://api.chucknorris.io"},
-      Tesla.Middleware.JSON,
-      Tesla.Middleware.Logger
-    ])
+      Tesla.Middleware.JSON
+    ]
+
+    # Only add Logger middleware outside of test environment
+    middleware = if Mix.env() != :test do
+      middleware ++ [Tesla.Middleware.Logger]
+    else
+      middleware
+    end
+
+    Tesla.client(middleware)
   end
 
   def get_random_joke do
