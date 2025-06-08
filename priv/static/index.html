@@ -159,9 +159,9 @@
 
 <body>
   <div class="container">
-    <h1>Generate API Key</h1>
+    <h1>Chuck Norris API</h1>
     <div class="section">
-      <button onclick="generateKey()">Generate</button>
+      <button onclick="generateKey()">Generate API Key</button>
       <p id="result"></p>
     </div>
 
@@ -169,13 +169,49 @@
     <div class="section">
       <div class="input-group">
         <textarea id="apiKey" placeholder="Paste your key here" rows="2"></textarea>
-        <button onclick="callProtected()">Call /api/v1/joke</button>
       </div>
-      <p id="response"></p>
+    </div>
+
+    <h2>Random Joke</h2>
+    <div class="section">
+      <div class="input-group">
+        <button onclick="callProtected('/api/v1/joke')">Get Random Joke</button>
+      </div>
+      <p id="randomJokeResponse"></p>
+    </div>
+
+    <h2>Categories</h2>
+    <div class="section">
+      <div class="input-group">
+        <button onclick="getCategories()">Get All Categories</button>
+      </div>
+      <p id="categoriesResponse"></p>
+    </div>
+
+    <h2>Joke by Category</h2>
+    <div class="section">
+      <div class="input-group">
+        <input type="text" id="categoryInput" placeholder="Enter category (e.g. 'dev', 'science')" />
+        <button onclick="getJokeByCategory()">Get Joke by Category</button>
+      </div>
+      <p id="categoryJokeResponse"></p>
+    </div>
+
+    <h2>Search Jokes</h2>
+    <div class="section">
+      <div class="input-group">
+        <input type="text" id="searchInput" placeholder="Enter search query" />
+        <button onclick="searchJokes()">Search Jokes</button>
+      </div>
+      <p id="searchResponse"></p>
     </div>
   </div>
 
   <script>
+    function getApiKey() {
+      return document.getElementById('apiKey').value;
+    }
+
     function generateKey() {
       fetch('/api/v1/keys', { method: 'POST' })
         .then(res => res.json())
@@ -185,18 +221,49 @@
         });
     }
 
-    function callProtected() {
-      const key = document.getElementById('apiKey').value;
-      fetch('/api/v1/joke', {
+    function makeRequest(endpoint, responseId) {
+      const key = getApiKey();
+      if (!key) {
+        document.getElementById(responseId).innerText = 'Error: Please generate and enter an API key first';
+        return;
+      }
+
+      fetch(endpoint, {
         headers: { 'X-API-Key': key }
       })
         .then(res => res.json())
         .then(data => {
-          document.getElementById('response').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+          document.getElementById(responseId).innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
         })
         .catch(err => {
-          document.getElementById('response').innerText = 'Error: ' + err.message;
+          document.getElementById(responseId).innerText = 'Error: ' + err.message;
         });
+    }
+
+    function callProtected(endpoint) {
+      makeRequest(endpoint, 'randomJokeResponse');
+    }
+
+    function getCategories() {
+      makeRequest('/api/v1/categories', 'categoriesResponse');
+    }
+
+    function getJokeByCategory() {
+      const category = document.getElementById('categoryInput').value.trim();
+      if (!category) {
+        document.getElementById('categoryJokeResponse').innerText = 'Error: Please enter a category';
+        return;
+      }
+      makeRequest(`/api/v1/joke/${encodeURIComponent(category)}`, 'categoryJokeResponse');
+    }
+
+    function searchJokes() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) {
+        document.getElementById('searchResponse').innerText = 'Error: Please enter a search query';
+        return;
+      }
+      makeRequest(`/api/v1/search?query=${encodeURIComponent(query)}`, 'searchResponse');
     }
   </script>
 </body>
