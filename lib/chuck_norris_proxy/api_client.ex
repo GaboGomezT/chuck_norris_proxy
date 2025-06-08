@@ -1,4 +1,20 @@
 defmodule ChuckNorrisProxy.APIClient do
+  defmodule ResponseTransformer do
+    @behaviour Tesla.Middleware
+
+    @impl Tesla.Middleware
+    def call(env, next, _opts) do
+      env
+      |> Tesla.run(next)
+      |> case do
+        {:ok, %{status: status, body: body} = response_env} when status in 200..299 and is_map(body) ->
+          transformed_body = Map.drop(body, ["icon_url", "url"])
+          {:ok, %{response_env | body: transformed_body}}
+        other -> other
+      end
+    end
+  end
+
   defp api_client do
     Application.get_env(:chuck_norris_proxy, :api_client, __MODULE__)
   end
@@ -6,6 +22,7 @@ defmodule ChuckNorrisProxy.APIClient do
   defp tesla_client do
     middleware = [
       {Tesla.Middleware.BaseUrl, "https://api.chucknorris.io"},
+      ResponseTransformer,
       Tesla.Middleware.JSON
     ]
 
