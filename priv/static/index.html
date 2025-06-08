@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>API Key Generator</title>
+</head>
+
+<body>
+  <h1>Generate API Key</h1>
+  <button onclick="generateKey()">Generate</button>
+  <p id="result"></p>
+
+  <h2>Test Protected API</h2>
+  <input id="apiKey" placeholder="Paste your key here" size="50" />
+  <button onclick="callProtected()">Call /api/v1/joke</button>
+  <p id="response"></p>
+
+  <script>
+    function generateKey() {
+      fetch('/api/v1/keys', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('result').innerText = "Your API key: " + data.key;
+          document.getElementById('apiKey').value = data.key;
+        });
+    }
+
+    function callProtected() {
+      const key = document.getElementById('apiKey').value;
+      fetch('/api/v1/joke', {
+        headers: { 'X-API-Key': key }
+      })
+        .then(res => res.text())
+        .then(txt => {
+          document.getElementById('response').innerText = txt;
+        });
+    }
+  </script>
+</body>
+
+</html>
