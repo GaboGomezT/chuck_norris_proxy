@@ -1,8 +1,9 @@
 # Chuck Norris Proxy
 
-A proxy service for Chuck Norris jokes API that provides a caching layer and additional features on top of the original API.
+A proxy service for Chuck Norris jokes API that provides rate limiting and API Key auth on top of the original API.
 
 > **Live Demo**: You can try out the API immediately at [https://pbh6r29nvy.us-west-2.awsapprunner.com/docs](https://pbh6r29nvy.us-west-2.awsapprunner.com/docs). This interactive documentation allows you to:
+>
 > - Generate an API key
 > - Test all endpoints directly from your browser
 > - View request/response examples
