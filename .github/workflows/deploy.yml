@@ -6,24 +6,36 @@ on:
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Erlang
+      - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.18.4'
-          otp-version: '26.2.1'
+          elixir-version: "1.18.4"
+          otp-version: "26.2.1"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
 
       - name: Install dependencies
-        run: |
-          rebar3 get-deps
-          rebar3 compile
+        run: mix deps.get
 
       - name: Run tests
-        run: rebar3 eunit
+        run: mix test
+        env:
+          RATE_LIMIT: 1000
+
+      - name: Check formatting
+        run: mix format --check-formatted
 
   deploy:
     needs: test
