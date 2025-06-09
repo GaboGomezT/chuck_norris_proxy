@@ -217,7 +217,7 @@ When rate limited, the API will return a 429 status code with a JSON response:
 
 ```json
 {
-	"error": "Rate limit exceeded. Try again in X seconds."
+	"error": "You have exceeded the rate limit of X requests per hour"
 }
 ```
 
