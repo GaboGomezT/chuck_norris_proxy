@@ -25,5 +25,5 @@ variable "instance_type" {
 variable "solution_stack_name" {
   description = "Elastic Beanstalk solution stack name"
   type        = string
-  default     = "64bit Amazon Linux 2 v5.8.0 running Docker"
+  default     = "64bit Amazon Linux 2 v4.1.2 running Docker"
 } 
