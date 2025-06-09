@@ -8,7 +8,7 @@ defmodule ChuckNorrisProxy.Application do
   @impl true
   def start(_type, _args) do
     # Load .env file if it exists (dev and test only)
-    unless Mix.env() == :prod do
+    if System.get_env("MIX_ENV") != "prod" do
       Envy.auto_load()
     end
 
@@ -19,7 +19,7 @@ defmodule ChuckNorrisProxy.Application do
     ]
 
     # Only start the web server if not in test environment
-    children = if Mix.env() != :test do
+    children = if System.get_env("MIX_ENV") != "test" do
       base_children ++ [{Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}]
     else
       base_children

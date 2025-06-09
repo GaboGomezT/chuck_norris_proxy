@@ -37,12 +37,17 @@ defmodule ChuckNorrisProxy.APIClient do
     middleware = [
       {Tesla.Middleware.BaseUrl, "https://api.chucknorris.io"},
       ResponseTransformer,
-      Tesla.Middleware.JSON
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Logger, log_level: &log_level/1}
     ]
 
-    # Only add Logger middleware outside of test environment
-    middleware = if Mix.env() != :test do
-      middleware ++ [Tesla.Middleware.Logger]
+    # Add retry middleware in non-test environments
+    middleware = if System.get_env("MIX_ENV") != "test" do
+      middleware ++ [{Tesla.Middleware.Retry, delay: 500, max_retries: 3, max_delay: 4_000, should_retry: fn
+        {:ok, %{status: status}} when status in 500..599 -> true
+        {:ok, _} -> false
+        {:error, _} -> true
+      end}]
     else
       middleware
     end
@@ -81,4 +86,8 @@ defmodule ChuckNorrisProxy.APIClient do
       api_client().search_jokes(query)
     end
   end
+
+  defp log_level(%{status: status}) when status in 500..599, do: :error
+  defp log_level(%{status: status}) when status in 400..499, do: :warn
+  defp log_level(_), do: :info
 end

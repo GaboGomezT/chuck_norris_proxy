@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+_build/
+deps/
+*.ez
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+.elixir_ls/
+
+# Test
+test/
+*.test
+*.spec
+
+# Misc
+README.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+*.md
+.DS_Store 
