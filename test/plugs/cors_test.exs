@@ -12,7 +12,11 @@ defmodule ChuckNorrisProxy.Plugs.CORSTest do
 
       assert get_resp_header(conn, "access-control-allow-origin") == ["*"]
       assert get_resp_header(conn, "access-control-allow-methods") == ["GET, POST, OPTIONS"]
-      assert get_resp_header(conn, "access-control-allow-headers") == ["Content-Type, Authorization, X-API-Key"]
+
+      assert get_resp_header(conn, "access-control-allow-headers") == [
+               "Content-Type, Authorization, X-API-Key"
+             ]
+
       assert get_resp_header(conn, "access-control-max-age") == ["86400"]
     end
 
