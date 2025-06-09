@@ -9,7 +9,7 @@ defmodule ChuckNorrisProxy.Router do
   plug(ChuckNorrisProxy.Plugs.APIKeyAuth)
   plug(:dispatch)
 
-  get "/api-keys-generator" do
+  get "/docs" do
     conn
     |> put_resp_content_type("text/html")
     |> send_file(200, Path.join(:code.priv_dir(:chuck_norris_proxy), "static/index.html"))

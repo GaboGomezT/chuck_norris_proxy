@@ -28,6 +28,6 @@ defmodule ChuckNorrisProxy.Plugs.APIKeyAuth do
 
   # List of paths that don't require authentication
   defp public_path?(path) do
-    path in ["/api-keys-generator", "/api/v1/keys"]
+    path in ["/docs", "/api/v1/keys"]
   end
 end

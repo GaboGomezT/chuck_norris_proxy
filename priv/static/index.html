@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>API Key Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Chuck Norris API Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -25,17 +25,167 @@
     }
 
     .container {
-      max-width: min(95vw, 800px);
+      max-width: min(95vw, 1000px);
       width: 100%;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(10px) saturate(110%);
       -webkit-backdrop-filter: blur(10px) saturate(110%);
-      padding: clamp(20px, 4vw, 36px);
+      padding: clamp(24px, 4vw, 48px);
       border-radius: clamp(12px, 2vw, 16px);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
       border: 1.5px solid #e3e8ee;
     }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #e3e8ee;
+    }
+
+    .header p {
+      color: #4b5563;
+      font-size: clamp(15px, 2vw, 16px);
+      max-width: 600px;
+      margin: 16px auto 0;
+      background: none;
+      border-left: none;
+      padding: 0;
+    }
+
+    .api-section {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      border: 1px solid #e3e8ee;
+    }
+
+    .api-section h2 {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .api-section h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+
+    .endpoint {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      border: 1px solid #e3e8ee;
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .method {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .get { background: #dbeafe; color: #1e40af; }
+    .post { background: #dcfce7; color: #166534; }
+
+    .path {
+      font-family: 'Monaco', 'Consolas', monospace;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .description {
+      color: #4b5563;
+      font-size: 14px;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    .test-section {
+      background: #f0f9ff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 16px;
+      border: 1px solid #dbeafe;
+    }
+
+    .test-section h3 {
+      color: #0369a1;
+      font-size: 15px;
+      margin: 0 0 12px 0;
+      font-weight: 600;
+    }
+
+    .api-key-input {
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .api-key-input textarea {
+      font-size: clamp(14px, 2vw, 15px);
+      padding: clamp(8px, 2vw, 11px) clamp(10px, 2vw, 14px);
+      border: 1.5px solid #e3e8ee;
+      border-radius: 8px;
+      transition: border-color 0.2s;
+      font-family: 'Monaco', 'Consolas', monospace;
+      background: rgba(255,255,255,0.85);
+      color: #23272f;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      width: 100%;
+      min-width: 0;
+      resize: vertical;
+      box-sizing: border-box;
+      word-break: break-all;
+      max-width: 600px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .api-key-input textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+
+    .test-section input[type="text"] {
+      margin-bottom: 12px;
+    }
+
+    .test-section button {
+      margin-top: 8px;
+    }
+
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .code-block .method { color: #60a5fa; }
+    .code-block .path { color: #94a3b8; }
+    .code-block .header { color: #34d399; }
 
     h1 {
       color: #2563eb;
@@ -235,74 +385,145 @@
 
 <body>
   <div class="container">
-    <h1>Chuck Norris API</h1>
-    <div class="section">
-      <button onclick="generateKey()">Generate API Key</button>
-      <p id="result"></p>
+    <div class="header">
+      <h1>Chuck Norris API Documentation</h1>
+      <p>A RESTful API that provides random Chuck Norris jokes. All endpoints require authentication using an API key.</p>
     </div>
 
-    <h2>Test Protected API</h2>
-    <div class="section">
-      <div class="input-group">
-        <textarea id="apiKey" placeholder="Paste your key here" rows="2"></textarea>
+    <div class="api-section">
+      <h2>Authentication</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="path">/api/v1/keys</span>
+        </div>
+        <p class="description">Generate a new API key to authenticate your requests. Only for demo purposes.</p>
+        <div class="code-block">
+          <pre>curl -X POST https://api.example.com/api/v1/keys</pre>
+        </div>
+        <div class="test-section">
+          <h3>Test Authentication</h3>
+          <div class="api-key-input">
+            <textarea id="authApiKey" placeholder="Your API key will appear here" rows="1" readonly></textarea>
+          </div>
+          <button onclick="generateKey()">Generate API Key</button>
+          <p id="result"></p>
+        </div>
       </div>
     </div>
 
-    <h2>Random Joke</h2>
-    <div class="section">
-      <div class="input-group">
-        <button onclick="callProtected('/api/v1/joke')">Get Random Joke</button>
-        <div class="loading-spinner" id="randomJokeSpinner"></div>
+    <div class="api-section">
+      <h2>Endpoints</h2>
+      
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="path">/api/v1/joke</span>
+        </div>
+        <p class="description">Get a random Chuck Norris joke.</p>
+        <div class="code-block">
+          <pre>curl -X GET https://api.example.com/api/v1/joke \
+  -H "<span class="header">X-API-Key: your-api-key</span>"</pre>
+        </div>
+        <div class="test-section">
+          <h3>Test Endpoint</h3>
+          <div class="api-key-input">
+            <textarea id="randomJokeApiKey" placeholder="Enter your API key" rows="1"></textarea>
+          </div>
+          <button onclick="callProtectedWithKey('/api/v1/joke', 'randomJokeApiKey', 'randomJokeResponse')">Test Endpoint</button>
+          <div class="loading-spinner" id="randomJokeSpinner"></div>
+          <p id="randomJokeResponse"></p>
+        </div>
       </div>
-      <p id="randomJokeResponse"></p>
-    </div>
 
-    <h2>Categories</h2>
-    <div class="section">
-      <div class="input-group">
-        <button onclick="getCategories()">Get All Categories</button>
-        <div class="loading-spinner" id="categoriesSpinner"></div>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="path">/api/v1/categories</span>
+        </div>
+        <p class="description">Get a list of all available joke categories.</p>
+        <div class="code-block">
+          <pre>curl -X GET https://api.example.com/api/v1/categories \
+  -H "<span class="header">X-API-Key: your-api-key</span>"</pre>
+        </div>
+        <div class="test-section">
+          <h3>Test Endpoint</h3>
+          <div class="api-key-input">
+            <textarea id="categoriesApiKey" placeholder="Enter your API key" rows="1"></textarea>
+          </div>
+          <button onclick="callProtectedWithKey('/api/v1/categories', 'categoriesApiKey', 'categoriesResponse')">Test Endpoint</button>
+          <div class="loading-spinner" id="categoriesSpinner"></div>
+          <p id="categoriesResponse"></p>
+        </div>
       </div>
-      <p id="categoriesResponse"></p>
-    </div>
 
-    <h2>Joke by Category</h2>
-    <div class="section">
-      <div class="input-group">
-        <input type="text" id="categoryInput" placeholder="Enter category (e.g. 'dev', 'science')" />
-        <button onclick="getJokeByCategory()">Get Joke by Category</button>
-        <div class="loading-spinner" id="categoryJokeSpinner"></div>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="path">/api/v1/joke/{category}</span>
+        </div>
+        <p class="description">Get a random joke from a specific category. Available categories include: 'dev', 'science', 'sport', etc.</p>
+        <div class="code-block">
+          <pre>curl -X GET https://api.example.com/api/v1/joke/dev \
+  -H "<span class="header">X-API-Key: your-api-key</span>"</pre>
+        </div>
+        <div class="test-section">
+          <h3>Test Endpoint</h3>
+          <div class="api-key-input">
+            <textarea id="categoryJokeApiKey" placeholder="Enter your API key" rows="1"></textarea>
+          </div>
+          <input type="text" id="categoryInput" placeholder="Enter category (e.g. 'dev', 'science')" />
+          <button onclick="getJokeByCategoryWithKey()">Test Endpoint</button>
+          <div class="loading-spinner" id="categoryJokeSpinner"></div>
+          <p id="categoryJokeResponse"></p>
+        </div>
       </div>
-      <p id="categoryJokeResponse"></p>
-    </div>
 
-    <h2>Search Jokes</h2>
-    <div class="section">
-      <div class="input-group">
-        <input type="text" id="searchInput" placeholder="Enter search query" />
-        <button onclick="searchJokes()">Search Jokes</button>
-        <div class="loading-spinner" id="searchSpinner"></div>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="path">/api/v1/search?query={search_term}</span>
+        </div>
+        <p class="description">Search for jokes containing specific text.</p>
+        <div class="code-block">
+          <pre>curl -X GET "https://api.example.com/api/v1/search?query=programming" \
+  -H "<span class="header">X-API-Key: your-api-key</span>"</pre>
+        </div>
+        <div class="test-section">
+          <h3>Test Endpoint</h3>
+          <div class="api-key-input">
+            <textarea id="searchApiKey" placeholder="Enter your API key" rows="1"></textarea>
+          </div>
+          <input type="text" id="searchInput" placeholder="Enter search query" />
+          <button onclick="searchJokesWithKey()">Test Endpoint</button>
+          <div class="loading-spinner" id="searchSpinner"></div>
+          <p id="searchResponse"></p>
+        </div>
       </div>
-      <p id="searchResponse"></p>
     </div>
   </div>
 
   <script>
-    function getApiKey() {
-      return document.getElementById('apiKey').value;
+    function getApiKey(inputId) {
+      return document.getElementById(inputId).value;
     }
 
     function generateKey() {
       fetch('/api/v1/keys', { method: 'POST' })
         .then(res => res.json())
         .then(data => {
-          document.getElementById('result').innerText = "Your API key: " + data.key;
-          document.getElementById('apiKey').value = data.key;
+          document.getElementById('authApiKey').value = data.key;
+          document.getElementById('result').innerText = "API key generated successfully!";
+          // Update all API key inputs with the new key
+          const apiKeyInputs = document.querySelectorAll('textarea[id$="ApiKey"]:not([readonly])');
+          apiKeyInputs.forEach(input => {
+            input.value = data.key;
+          });
         });
     }
 
     function setLoading(sectionId, isLoading) {
-      const section = document.querySelector(`#${sectionId}`).closest('.section');
+      const section = document.querySelector(`#${sectionId}`).closest('.test-section');
       const button = section.querySelector('button');
       const spinner = section.querySelector('.loading-spinner');
       
@@ -315,10 +536,10 @@
       }
     }
 
-    function makeRequest(endpoint, responseId) {
-      const key = getApiKey();
+    function makeRequest(endpoint, apiKeyInputId, responseId) {
+      const key = getApiKey(apiKeyInputId);
       if (!key) {
-        document.getElementById(responseId).innerText = 'Error: Please generate and enter an API key first';
+        document.getElementById(responseId).innerText = 'Error: Please enter an API key';
         return;
       }
 
@@ -341,30 +562,26 @@
         });
     }
 
-    function callProtected(endpoint) {
-      makeRequest(endpoint, 'randomJokeResponse');
+    function callProtectedWithKey(endpoint, apiKeyInputId, responseId) {
+      makeRequest(endpoint, apiKeyInputId, responseId);
     }
 
-    function getCategories() {
-      makeRequest('/api/v1/categories', 'categoriesResponse');
-    }
-
-    function getJokeByCategory() {
+    function getJokeByCategoryWithKey() {
       const category = document.getElementById('categoryInput').value.trim();
       if (!category) {
         document.getElementById('categoryJokeResponse').innerText = 'Error: Please enter a category';
         return;
       }
-      makeRequest(`/api/v1/joke/${encodeURIComponent(category)}`, 'categoryJokeResponse');
+      makeRequest(`/api/v1/joke/${encodeURIComponent(category)}`, 'categoryJokeApiKey', 'categoryJokeResponse');
     }
 
-    function searchJokes() {
+    function searchJokesWithKey() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) {
         document.getElementById('searchResponse').innerText = 'Error: Please enter a search query';
         return;
       }
-      makeRequest(`/api/v1/search?query=${encodeURIComponent(query)}`, 'searchResponse');
+      makeRequest(`/api/v1/search?query=${encodeURIComponent(query)}`, 'searchApiKey', 'searchResponse');
     }
   </script>
 </body>

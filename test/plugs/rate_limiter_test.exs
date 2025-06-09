@@ -256,7 +256,7 @@ defmodule ChuckNorrisProxy.Plugs.RateLimiterTest do
     test "only rate limits /api/v1/joke endpoint" do
       # These endpoints should not be rate limited
       non_rate_limited_paths = [
-        "/api-keys-generator",
+        "/docs",
         "/api/v1/keys",
         "/some-other-path",
         "/"

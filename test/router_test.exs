@@ -14,20 +14,20 @@ defmodule ChuckNorrisProxy.RouterTest do
     :ok
   end
 
-  describe "GET /api-keys-generator" do
+  describe "GET /docs" do
     test "serves the HTML page" do
       conn =
-        conn(:get, "/api-keys-generator")
+        conn(:get, "/docs")
         |> Router.call(@opts)
 
       assert conn.status == 200
       assert get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
-      assert String.contains?(conn.resp_body, "API Key Generator")
+      assert String.contains?(conn.resp_body, "Chuck Norris API Documentation")
     end
 
     test "does not require authentication" do
       conn =
-        conn(:get, "/api-keys-generator")
+        conn(:get, "/docs")
         |> Router.call(@opts)
 
       assert conn.status == 200

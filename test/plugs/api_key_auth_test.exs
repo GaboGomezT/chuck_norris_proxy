@@ -24,7 +24,7 @@ defmodule ChuckNorrisProxy.Plugs.APIKeyAuthTest do
 
   describe "public endpoints" do
     test "public endpoints work without any headers" do
-      public_paths = ["/api-keys-generator", "/api/v1/keys"]
+      public_paths = ["/docs", "/api/v1/keys"]
 
       for path <- public_paths do
         conn =
