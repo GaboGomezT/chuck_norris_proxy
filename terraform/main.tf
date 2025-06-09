@@ -120,9 +120,5 @@ resource "aws_elastic_beanstalk_environment" "app" {
     value     = "4000"
   }
 
-  setting {
-    namespace = "aws:elasticbeanstalk:environment:proxy:staticfiles"
-    name      = "/static"
-    value     = "static"
-  }
+
 } 
