@@ -4,6 +4,8 @@ defmodule ChuckNorrisProxy.Router do
   plug(:match)
   plug(Plug.Parsers, parsers: [:json], json_decoder: Jason)
   plug(:fetch_query_params)
+  # Add CORS plug before other plugs
+  plug(ChuckNorrisProxy.Plugs.CORS)
   # configurable rate limit via RATE_LIMIT env var
   plug(ChuckNorrisProxy.Plugs.RateLimiter)
   plug(ChuckNorrisProxy.Plugs.APIKeyAuth)
