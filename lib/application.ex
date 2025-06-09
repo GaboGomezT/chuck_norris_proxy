@@ -19,11 +19,13 @@ defmodule ChuckNorrisProxy.Application do
     ]
 
     # Only start the web server if not in test environment
-    children = if System.get_env("MIX_ENV") != "test" do
-      base_children ++ [{Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}]
-    else
-      base_children
-    end
+    children =
+      if System.get_env("MIX_ENV") != "test" do
+        base_children ++
+          [{Plug.Cowboy, scheme: :http, plug: ChuckNorrisProxy.Router, options: [port: 4000]}]
+      else
+        base_children
+      end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

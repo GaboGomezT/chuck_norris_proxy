@@ -7,10 +7,13 @@ defmodule ChuckNorrisProxy.APIClient do
       env
       |> Tesla.run(next)
       |> case do
-        {:ok, %{status: status, body: body} = response_env} when status in 200..299 and is_map(body) ->
+        {:ok, %{status: status, body: body} = response_env}
+        when status in 200..299 and is_map(body) ->
           transformed_body = transform_response_body(body)
           {:ok, %{response_env | body: transformed_body}}
-        other -> other
+
+        other ->
+          other
       end
     end
 
@@ -22,6 +25,7 @@ defmodule ChuckNorrisProxy.APIClient do
           # Handle search results - transform each joke in the result array
           transformed_results = Enum.map(results, &Map.drop(&1, ["icon_url", "url"]))
           %{response | "result" => transformed_results}
+
         response ->
           # Handle single joke response or other responses
           response
@@ -42,15 +46,23 @@ defmodule ChuckNorrisProxy.APIClient do
     ]
 
     # Add retry middleware in non-test environments
-    middleware = if System.get_env("MIX_ENV") != "test" do
-      middleware ++ [{Tesla.Middleware.Retry, delay: 500, max_retries: 3, max_delay: 4_000, should_retry: fn
-        {:ok, %{status: status}} when status in 500..599 -> true
-        {:ok, _} -> false
-        {:error, _} -> true
-      end}]
-    else
-      middleware
-    end
+    middleware =
+      if System.get_env("MIX_ENV") != "test" do
+        middleware ++
+          [
+            {Tesla.Middleware.Retry,
+             delay: 500,
+             max_retries: 3,
+             max_delay: 4_000,
+             should_retry: fn
+               {:ok, %{status: status}} when status in 500..599 -> true
+               {:ok, _} -> false
+               {:error, _} -> true
+             end}
+          ]
+      else
+        middleware
+      end
 
     Tesla.client(middleware)
   end

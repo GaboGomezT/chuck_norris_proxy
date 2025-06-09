@@ -29,7 +29,8 @@ defmodule ChuckNorrisProxy.MixProject do
       {:uuid, "~> 1.1"},
       {:envy, "~> 1.1.1"},
       {:tesla, "~> 1.8"},
-      {:hackney, "~> 1.18"} # HTTP client adapter for Tesla
+      # HTTP client adapter for Tesla
+      {:hackney, "~> 1.18"}
     ]
   end
 end

@@ -35,7 +35,24 @@ defmodule ChuckNorrisProxy.Test.MockAPIClient do
     {:ok,
      %{
        status: 200,
-       body: ["animal", "career", "celebrity", "dev", "explicit", "fashion", "food", "history", "money", "movie", "music", "political", "religion", "science", "sport", "travel"]
+       body: [
+         "animal",
+         "career",
+         "celebrity",
+         "dev",
+         "explicit",
+         "fashion",
+         "food",
+         "history",
+         "money",
+         "movie",
+         "music",
+         "political",
+         "religion",
+         "science",
+         "sport",
+         "travel"
+       ]
      }}
   end
 

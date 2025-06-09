@@ -49,7 +49,8 @@ defmodule ChuckNorrisProxy.APIClientTest do
               "id" => "rlra7cwks9y5vqwuzz8osq",
               "updated_at" => "2020-01-05 13:42:19.104863",
               "url" => "https://api.chucknorris.io/jokes/rlra7cwks9y5vqwuzz8osq",
-              "value" => "Let the Bodies Hit the Floor was originally written as Chuck Norris' theme song."
+              "value" =>
+                "Let the Bodies Hit the Floor was originally written as Chuck Norris' theme song."
             },
             %{
               "categories" => ["dev"],
