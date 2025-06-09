@@ -89,6 +89,44 @@ resource "aws_iam_role_policy" "eb_service" {
   })
 }
 
+# IAM role for EC2 instances
+resource "aws_iam_role" "eb_ec2_role" {
+  name = "aws-elasticbeanstalk-ec2-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "eb_ec2_profile" {
+  name = "aws-elasticbeanstalk-ec2-profile"
+  role = aws_iam_role.eb_ec2_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "eb_ec2_webtier" {
+  role       = aws_iam_role.eb_ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
+}
+
+resource "aws_iam_role_policy_attachment" "eb_ec2_ecr_readonly" {
+  role       = aws_iam_role.eb_ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "eb_ec2_cloudwatch" {
+  role       = aws_iam_role.eb_ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
 # Elastic Beanstalk Environment
 resource "aws_elastic_beanstalk_environment" "app" {
   name                = "chuck-norris-proxy-env"
@@ -97,9 +135,15 @@ resource "aws_elastic_beanstalk_environment" "app" {
   tier                = "WebServer"
 
   setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "ServiceRole"
+    value     = aws_iam_role.eb_service.arn
+  }
+
+  setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
-    value     = aws_iam_role.eb_service.name
+    value     = aws_iam_instance_profile.eb_ec2_profile.name
   }
 
   setting {
@@ -120,5 +164,10 @@ resource "aws_elastic_beanstalk_environment" "app" {
     value     = "4000"
   }
 
-
+  depends_on = [
+    aws_iam_instance_profile.eb_ec2_profile,
+    aws_iam_role_policy_attachment.eb_ec2_webtier,
+    aws_iam_role_policy_attachment.eb_ec2_ecr_readonly,
+    aws_iam_role_policy_attachment.eb_ec2_cloudwatch
+  ]
 } 
