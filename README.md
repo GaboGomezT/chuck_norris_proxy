@@ -2,6 +2,12 @@
 
 A proxy service for Chuck Norris jokes API that provides a caching layer and additional features on top of the original API.
 
+> **Live Demo**: You can try out the API immediately at [https://pbh6r29nvy.us-west-2.awsapprunner.com/docs](https://pbh6r29nvy.us-west-2.awsapprunner.com/docs). This interactive documentation allows you to:
+> - Generate an API key
+> - Test all endpoints directly from your browser
+> - View request/response examples
+> - Explore the available joke categories
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -10,6 +16,7 @@ A proxy service for Chuck Norris jokes API that provides a caching layer and add
 - [API Documentation](#api-documentation)
 - [Development](#development)
 - [Contributing](#contributing)
+- [Deployment](#deployment)
 
 ## Prerequisites
 
@@ -47,13 +54,25 @@ A proxy service for Chuck Norris jokes API that provides a caching layer and add
 
    The server will be available at `http://localhost:4000`
 
+   > **Tip**: Once the server is running, you can access the interactive API documentation at `http://localhost:4000/docs`. This documentation interface allows you to:
+   >
+   > - Explore all available API endpoints
+   > - Generate a new API key using the `/api/v1/keys` endpoint
+   > - Test the API directly from the browser
+   > - View request/response examples
+   >
+   > This is the easiest way to get started with the API and obtain your first API key.
+
 ### Docker Setup
 
 #### Production
+
 1. Build and run using Docker Compose:
+
    ```bash
    docker-compose up --build
    ```
+
    This will start the service in a container and make it available at `http://localhost:4000`
 
 2. Or build and run using Docker directly:
@@ -63,9 +82,11 @@ A proxy service for Chuck Norris jokes API that provides a caching layer and add
    ```
 
 #### Development with Docker
+
 You can also use Docker for development by mounting your local code into the container. This allows you to make changes to the code and have them immediately reflected in the running container.
 
 1. Edit `docker-compose.yml` and uncomment the volumes section:
+
    ```yaml
    volumes:
      - ./config:/app/config
@@ -79,6 +100,7 @@ You can also use Docker for development by mounting your local code into the con
    ```
 
 Now you can:
+
 - Edit files in your local `lib/`, `config/`, and `priv/` directories
 - Changes will be immediately reflected in the container
 - The container will automatically recompile when files change
@@ -88,9 +110,9 @@ Now you can:
 
 The service can be configured using environment variables:
 
-| Variable               | Description                            | Default                      | Required |
-| ---------------------- | -------------------------------------- | ---------------------------- | -------- |
-| `RATE_LIMIT`           | Number of requests allowed per minute  | `100`                         | No       |
+| Variable     | Description                           | Default | Required |
+| ------------ | ------------------------------------- | ------- | -------- |
+| `RATE_LIMIT` | Number of requests allowed per minute | `100`   | No       |
 
 You can set these variables in a `.env` file or directly in your environment.
 
@@ -231,6 +253,55 @@ mix test
 # Run specific test file
 mix test test/chuck_norris_proxy/router_test.exs
 ```
+
+## Deployment
+
+### AWS Setup
+
+#### 1. Create an ECR Repository
+
+1. Log into the AWS Console and navigate to Amazon ECR
+2. Click "Create repository"
+3. Enter repository name: `erlang-api`
+4. Keep default settings and click "Create repository"
+
+#### 2. Create an App Runner Service
+
+1. Navigate to AWS App Runner in the AWS Console
+2. Click "Create service"
+3. Select "Container registry" as the source
+4. Choose "Amazon ECR" as the provider
+5. Select the `erlang-api` repository
+6. For the first deployment, you can skip the image tag selection since no images exist yet
+7. Configure the service:
+   - Service name: `chuck-norris-proxy` (or your preferred name)
+   - Port: `4000` (matches our application port)
+   - Environment variables (optional):
+     - `RATE_LIMIT`: `100` (or your preferred limit)
+8. Click "Create & deploy"
+
+#### 3. CI/CD Pipeline
+
+The repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically:
+
+- Runs tests
+- Builds the Docker image
+- Pushes the image to ECR with multiple tags:
+  - `latest`
+  - Git commit SHA
+  - Timestamp
+- The App Runner service will automatically deploy new images when they are pushed to ECR
+
+To enable the CI/CD pipeline:
+
+1. Add the following secrets to your GitHub repository:
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+2. Ensure the AWS IAM user has permissions for:
+   - ECR (push/pull images)
+   - App Runner (deploy services)
+
+The service will be available at the App Runner URL provided after deployment.
 
 ## Contributing
 
