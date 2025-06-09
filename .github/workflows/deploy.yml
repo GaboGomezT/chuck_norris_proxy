@@ -61,8 +61,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: erlang-api
           IMAGE_TAG: ${{ github.sha }}
-          TIMESTAMP: ${{ format('{0:yyyyMMdd-HHmmss}', github.event.repository.updated_at) }}
         run: |
+          # Generate timestamp
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          
           # Build the image with both latest and versioned tags
           docker build -t $ECR_REPOSITORY:latest -t $ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REPOSITORY:$TIMESTAMP .
           
