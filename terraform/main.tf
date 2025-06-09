@@ -14,7 +14,7 @@ provider "aws" {
 
 # ECR Repository
 resource "aws_ecr_repository" "app" {
-  name                 = "chuck-norris-proxy"
+  name                 = "chuck-norris-proxy-v2"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -24,13 +24,13 @@ resource "aws_ecr_repository" "app" {
 
 # Elastic Beanstalk Application
 resource "aws_elastic_beanstalk_application" "app" {
-  name        = "chuck-norris-proxy"
+  name        = "chuck-norris-proxy-v2"
   description = "Chuck Norris Proxy API"
 }
 
 # IAM role for Elastic Beanstalk
 resource "aws_iam_role" "eb_service" {
-  name = "elastic_beanstalk_service_role"
+  name = "elastic_beanstalk_service_role_v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -48,7 +48,7 @@ resource "aws_iam_role" "eb_service" {
 
 # IAM role policy for Elastic Beanstalk
 resource "aws_iam_role_policy" "eb_service" {
-  name = "elastic_beanstalk_service_policy"
+  name = "elastic_beanstalk_service_policy_v2"
   role = aws_iam_role.eb_service.id
 
   policy = jsonencode({
@@ -91,7 +91,7 @@ resource "aws_iam_role_policy" "eb_service" {
 
 # IAM role for EC2 instances
 resource "aws_iam_role" "eb_ec2_role" {
-  name = "aws-elasticbeanstalk-ec2-role"
+  name = "aws-elasticbeanstalk-ec2-role-v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -108,7 +108,7 @@ resource "aws_iam_role" "eb_ec2_role" {
 }
 
 resource "aws_iam_instance_profile" "eb_ec2_profile" {
-  name = "aws-elasticbeanstalk-ec2-profile"
+  name = "aws-elasticbeanstalk-ec2-profile-v2"
   role = aws_iam_role.eb_ec2_role.name
 }
 
@@ -129,7 +129,7 @@ resource "aws_iam_role_policy_attachment" "eb_ec2_cloudwatch" {
 
 # Elastic Beanstalk Environment
 resource "aws_elastic_beanstalk_environment" "app" {
-  name                = "chuck-norris-proxy-env"
+  name                = "chuck-norris-proxy-env-v2"
   application         = aws_elastic_beanstalk_application.app.name
   solution_stack_name = var.solution_stack_name
   tier                = "WebServer"
