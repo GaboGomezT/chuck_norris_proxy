@@ -1,11 +1,32 @@
-name: Deploy to AWS ECR
+name: Test and Deploy to AWS ECR
 
 on:
   push:
     branches: [main]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.18.4'
+          otp-version: '26.2.1'
+
+      - name: Install dependencies
+        run: |
+          rebar3 get-deps
+          rebar3 compile
+
+      - name: Run tests
+        run: rebar3 eunit
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
