@@ -50,6 +50,7 @@ COPY --from=build /app/_build/prod/rel/chuck_norris_proxy ./
 # Set environment variables
 ENV MIX_ENV=prod
 ENV PORT=4000
+ENV RATE_LIMIT=1000
 
 # The command to run the application
 CMD ["bin/chuck_norris_proxy", "start"] 
